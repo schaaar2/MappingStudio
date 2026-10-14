@@ -211,6 +211,11 @@ function typeOk(indId, classId){ // individual's asserted or inferred types incl
   const ts=(ONT.individuals[indId]||{}).types||[];
   return ts.some(t=>t===classId||ancestors(t).includes(classId));
 }
+function indsForClass(classId){ // individuals that are instances of classId (asserted or via subclass inference)
+  const ids=Object.keys(ONT.individuals);
+  return classId? ids.filter(i=>typeOk(i,classId)) : ids;
+}
+const indOption=(id,sel)=>`<option value="${id}" ${id===sel?"selected":""}>${esc(lbl(id))} : ${esc(lbl(assertedType(id)||"?"))}</option>`;
 /* AI proposal: scan the column's cell values for ontology individuals (key-value data models) */
 function valueRestrictions(prof){
   const out=[];
@@ -251,16 +256,24 @@ async function semValueRestrictions(prof){
 }
 
 /* ---------------------- proposal engine ---------------------- */
-function keyCols(){
-  // user-defined default keys take precedence; heuristic guess otherwise
-  const manual=(($("defaultKeys")&&$("defaultKeys").value)||"").split(",").map(x=>x.trim()).filter(Boolean);
-  if(manual.length) return manual;
-  const h=STATE.headers;
+let DEFAULT_KEYS=[]; // selected in the 🔑 multiselect (from CSV columns)
+function guessKeys(headers){
   const keys=[];
-  const study=h.find(x=>/^study$/i.test(x)); if(study) keys.push(study);
-  const site=h.find(x=>/^site ?id$/i.test(x)); if(site) keys.push(site);
-  return keys.length?keys:h.slice(0,1);
+  const study=headers.find(x=>/^study$/i.test(x)); if(study) keys.push(study);
+  const site=headers.find(x=>/^site ?id$/i.test(x)); if(site) keys.push(site);
+  return keys.length?keys:headers.slice(0,1);
 }
+function keyCols(){ return DEFAULT_KEYS.length? [...DEFAULT_KEYS] : guessKeys(STATE.headers); }
+function renderDkList(){
+  $("dkList").innerHTML = STATE.headers.length
+    ? STATE.headers.map(h=>`<label class="ddopt"><input type="checkbox" value="${esc(h)}" ${DEFAULT_KEYS.includes(h)?"checked":""}> ${esc(h)}</label>`).join("")
+    : '<span class="muted">load a CSV first</span>';
+  $("dkLabel").textContent=DEFAULT_KEYS.join(", ")||"—";
+}
+$("dkList").addEventListener("change",()=>{
+  DEFAULT_KEYS=[...$("dkList").querySelectorAll("input:checked")].map(x=>x.value);
+  $("dkLabel").textContent=DEFAULT_KEYS.join(", ")||"—";
+});
 
 async function proposeForColumn(prof){
   const sources=[], restr=[], notes=[];
@@ -392,7 +405,7 @@ function render(){
       `<div class="mapline">→ <b>${esc(lbl(m.classId)||"?")}</b> <span class="curie">${esc(m.classId||"")}</span>
         ${m.propId?` · <b>${esc(lbl(m.propId))}</b> <span class="curie">${esc(m.propId)}</span>`:""}
         ${m.plannedActual?` · <span class="chip">${m.plannedActual}</span>`:""}
-        <div class="chiprow">${restrChips(m)}${m.keys&&m.keys.length?`<span class="chip">🔑 keys: ${esc(m.keys.join(", "))}</span>`:""}</div></div>` : "";
+        <div class="chiprow">${restrChips(m)}<span class="chip keychip">🔑 keys: ${esc((m.keys||[]).join(", ")||"—")}</span></div></div>` : "";
     const card=document.createElement("div");
     card.className="card "+m.status;
     card.innerHTML=`
@@ -411,8 +424,13 @@ function render(){
       </div>
       <details class="edit" ${m._editOpen?"open":""}><summary>✏️ Edit mapping</summary><div class="editgrid">
         <label>Class</label><select data-e="classId" data-i="${i}">${["", ...Object.keys(ONT.classes)].map(id=>`<option value="${id}" ${id===(m.classId||"")?"selected":""}>${id?esc(lbl(id))+" ("+id+")":"—"}</option>`).join("")}</select>
-        <label>Data property</label><select data-e="propId" data-i="${i}">${["", ...Object.keys(ONT.dataProperties)].map(id=>`<option value="${id}" ${id===(m.propId||"")?"selected":""}>${id?esc(lbl(id))+" ("+id+")":"—"}</option>`).join("")}</select>
-        <label>Key fields</label><input data-e="keys" data-i="${i}" value="${esc((m.keys||[]).join(", "))}" placeholder="comma-separated column names">
+        <label>Data property</label><select data-e="propId" data-i="${i}">${(()=>{
+          const rel=relevantDataProps(m.classId);
+          const opts=["",...rel];
+          if(m.propId && !rel.includes(m.propId)) opts.push(m.propId); // keep current selection visible, flagged
+          return opts.map(id=>`<option value="${id}" ${id===(m.propId||"")?"selected":""}>${id?esc(lbl(id))+" ("+id+")"+(rel.includes(id)?"":" ⚠ not linked to this class"):"—"}</option>`).join("");
+        })()}</select>
+        <label>Key fields</label><details class="ddmulti inline"><summary><span class="ksel">${esc((m.keys||[]).join(", ")||"— none —")}</span></summary><div class="ddlist">${STATE.headers.map(h=>`<label class="ddopt"><input type="checkbox" data-e="keycb" data-i="${i}" value="${esc(h)}" ${(m.keys||[]).includes(h)?"checked":""}> ${esc(h)}</label>`).join("")}</div></details>
       </div>
       <div class="resedit">
         <b>Restrictions (key–value context)</b>
@@ -420,10 +438,10 @@ function render(){
           `<span class="chip">${esc(lbl(r.classId))}${r.indId?` = <b>${esc(lbl(r.indId))}</b>`:""}${r.propId?` via ${esc(lbl(r.propId))} (key)`:""}${r.newInd&&m.newInd?` = ＋“${esc(m.newInd.label)}” (new)`:""} <button class="chipx" title="remove" data-a="rmres" data-i="${i}" data-r="${ri}">✗</button></span>`).join("") : '<span class="muted">none</span>'}</div>
         <div class="row">
           <select data-role="resClass"><option value="">class (optional)…</option>${Object.keys(ONT.classes).map(id=>`<option value="${id}">${esc(lbl(id))} (${id})</option>`).join("")}</select>
-          <select data-role="resInd"><option value="">individual…</option>${Object.keys(ONT.individuals).map(id=>`<option value="${id}">${esc(lbl(id))} : ${esc(lbl(assertedType(id)||"?"))}</option>`).join("")}</select>
+          <select data-role="resInd"><option value="">individual…</option>${Object.keys(ONT.individuals).map(id=>indOption(id,null)).join("")}</select>
           <button class="ghost" data-a="addres" data-i="${i}">＋ Add restriction</button>
         </div>
-        <div class="note">Pick an individual (its asserted class is used automatically, e.g. SIV : Site Milestone Name) and/or a class for a class-only restriction. The OWL type check rejects incompatible pairs.</div>
+        <div class="note">Selecting a class filters the individual list to its (inferred) instances; leave the class empty to see all individuals — the asserted class is then used automatically (e.g. SIV : Site Milestone Name). A class without an individual gives a class-only restriction.</div>
       </div></details>`;
     el.appendChild(card);
   });
@@ -471,11 +489,27 @@ $("cards").addEventListener("click",e=>{
   render();
 });
 $("cards").addEventListener("change",e=>{
+  // restriction class picked → filter the individual dropdown to instances of that class (in place)
+  const rc=e.target.closest('select[data-role="resClass"]');
+  if(rc){
+    const indSel=rc.parentElement.querySelector('select[data-role="resInd"]');
+    const keep=indSel.value;
+    const ids=indsForClass(rc.value||null);
+    indSel.innerHTML='<option value="">'+(rc.value? (ids.length? "individual of "+esc(lbl(rc.value))+"…" : "no individuals of "+esc(lbl(rc.value))) : "individual…")+'</option>'
+      + ids.map(id=>indOption(id, ids.includes(keep)?keep:null)).join("");
+    return;
+  }
   const s=e.target.closest("select[data-e],input[data-e]"); if(!s) return;
   if(!s.dataset.i) return; // resClass/resInd selects are handled by the Add button
   const m=STATE.maps[+s.dataset.i]; const f=s.dataset.e;
-  if(f==="keys") m.keys=s.value.split(",").map(x=>x.trim()).filter(Boolean);
-  else m[f]=s.value||null;
+  if(f==="keycb"){ // key multiselect: update in place, no full re-render (keeps the dropdown open)
+    const dd=s.closest(".ddmulti");
+    m.keys=[...dd.querySelectorAll('input[data-e="keycb"]:checked')].map(x=>x.value);
+    dd.querySelector(".ksel").textContent=m.keys.join(", ")||"— none —";
+    const chip=s.closest(".card").querySelector(".keychip"); if(chip) chip.textContent="🔑 keys: "+(m.keys.join(", ")||"—");
+    m._editOpen=true; saveLS(); return;
+  }
+  m[f]=s.value||null;
   m.sources.push({src:"owl",txt:"manually edited ("+f+")"});
   m._editOpen=true;
   render();
@@ -597,11 +631,10 @@ function runCSV(text, fileName){
   if(!headers.length){ $("csvInfo").textContent="Could not parse CSV."; return; }
   STATE={fileName, headers, rows, cols:[], maps:[]};
   STATE.cols=headers.map(h=>profileColumn(h,rows));
-  if($("defaultKeys") && !$("defaultKeys").value){
-    const guess=[]; const st=headers.find(x=>/^study$/i.test(x)); if(st) guess.push(st);
-    const si=headers.find(x=>/^site ?id$/i.test(x)); if(si) guess.push(si);
-    $("defaultKeys").value=guess.join(", ");
-  }
+  // keep previously chosen default keys that still exist in the new CSV; otherwise guess
+  DEFAULT_KEYS=DEFAULT_KEYS.filter(k=>headers.includes(k));
+  if(!DEFAULT_KEYS.length) DEFAULT_KEYS=guessKeys(headers);
+  renderDkList();
   $("csvInfo").textContent=`${fileName}: ${headers.length} columns · ${rows.length} rows`;
   $("propose").disabled=false;
   $("cards").innerHTML=`<div class="card"><div class="chead"><span class="colname">CSV loaded.</span><span class="muted">Click “⚙️ Propose mappings” to run the pipeline.</span></div></div>`;
@@ -824,6 +857,30 @@ function resolveCFG(){
   if(!CFG.milestone) CFG.milestone=Object.keys(ONT.classes).find(id=>/milestone|event\b/i.test(ONT.classes[id].label))||null;
   if(CFG.planning) CFG.planningInd=Object.keys(ONT.individuals).find(id=>(ONT.individuals[id].types||[]).includes(CFG.planning))||null;
 }
+/* data properties applicable to a class: rdfs:domain = class or ancestor,
+   OR used in an own/inherited owl:Restriction, plus their sub-/super-properties */
+function relevantDataProps(classId){
+  const all=Object.keys(ONT.dataProperties);
+  if(!classId||!ONT.classes[classId]) return all;
+  const line=[classId,...ancestors(classId)];
+  const set=new Set();
+  for(const id of all){
+    const d=ONT.dataProperties[id].domain;
+    if(d && line.includes(d)) set.add(id);
+  }
+  for(const c of line)
+    for(const r of (ONT.classes[c].restr||[]))
+      if(ONT.dataProperties[r.p]) set.add(r.p);
+  let grew=true; // close over sub/super-property links
+  while(grew){ grew=false;
+    for(const id of all){ if(set.has(id)) continue;
+      const sub=ONT.dataProperties[id].sub;
+      if((sub&&set.has(sub)) || [...set].some(s=>ONT.dataProperties[s]&&ONT.dataProperties[s].sub===id)){ set.add(id); grew=true; }
+    }
+  }
+  return set.size? [...set] : all; // nothing linked → don't leave the user with an empty list
+}
+
 function pickDataProp(re, classId){
   const ids=Object.keys(ONT.dataProperties);
   // prefer a property whose domain fits the class
