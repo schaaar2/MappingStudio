@@ -1,70 +1,62 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ontology Mapping Studio — Site Readiness</title>
-<link rel="stylesheet" href="styles.css">
-</head>
-<body>
-<header>
-  <h1>🗺️ Ontology Mapping Studio</h1>
-  <div class="sub">CSV columns → OWL ontology (classes · data properties · restrictions) → YAML / R2RML</div>
-</header>
-
-<section id="controls" class="panel">
-  <div class="row">
-    <label class="filebtn">🦉 Load ontology (.ttl / .rdf / .owl)
-      <input type="file" id="ontInput" accept=".ttl,.rdf,.owl,.nt,.xml,.rdfs">
-    </label>
-    <span id="ontInfo" class="muted">no ontology loaded yet</span>
-  </div>
-  <div class="row">
-    <label class="filebtn">📂 Load CSV (stays in your browser)
-      <input type="file" id="fileInput" accept=".csv,.txt">
-    </label>
-    <button id="loadSample" class="ghost">Load bundled synthetic sample</button>
-    <span id="csvInfo" class="muted"></span>
-  </div>
-  <div class="row">
-    <button id="semBtn" class="ghost">🧠 Enable semantic matching (all-MiniLM-L6-v2)</button>
-    <span id="semStatus" class="muted">off — lexical + OWL only</span>
-  </div>
-  <div class="row">
-    <label class="muted">🔑 Default key fields&nbsp;<input id="defaultKeys" placeholder="e.g. Study, SiteID" title="Used for new proposals; override per mapping in its editor"></label>
-  </div>
-  <div class="row">
-    <button id="propose" class="primary" disabled>⚙️ Propose mappings</button>
-    <button id="exportYaml" class="ghost" disabled>⬇ Export YAML</button>
-    <button id="exportR2rml" class="ghost" disabled>⬇ Export R2RML (.ttl)</button>
-    <button id="exportJson" class="ghost" disabled>⬇ Export JSON</button>
-    <button id="resetAll" class="ghost">Reset decisions</button>
-  </div>
-  <div id="summary" class="row muted"></div>
-  <div id="gaps" class="gaps"></div>
-  <p class="privacy">⚠️ Privacy: the CSV is parsed locally in your browser and is never uploaded. Do <b>not</b> commit real tracker data or exported mappings containing internal content to a <i>public</i> GitHub repository.</p>
-</section>
-
-<section id="cards" class="cards"></section>
-
-<section class="panel" id="exportPanel" style="display:none">
-  <h2 id="exportTitle"></h2>
-  <div class="row"><button id="copyExport" class="ghost">📋 Copy</button><button id="dlExport" class="primary">⬇ Download</button></div>
-  <pre id="exportPre"></pre>
-</section>
-
-<footer class="muted">Neuro-symbolic mapping pipeline: 🔤 lexical match on labels/synonyms · 🧪 value profiling (dates, booleans, identifiers) · 🕸 OWL validation (domain/range, restriction templates) · ✅ human confirmation. Ontology: site_readiness_demo.ttl (ClinOps-Core / NCIT / USDM / BFO / RO).</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/n3@1.17.4/browser/n3.min.js"></script>
-<script src="app.js"></script>
-<script>
-/* Fail-loud guard: if app.js was not found/loaded (e.g. 404 on GitHub Pages), say so on the page. */
-if(!window.__APP_LOADED__){
-  document.body.insertAdjacentHTML("afterbegin",
-    '<div style="background:#fdecea;border:1px solid #b3433b;color:#7a2d28;border-radius:8px;padding:10px 12px;margin:10px 0;font-size:13px">'+
-    '⚠ <b>app.js did not load.</b> Check that a file named exactly <code>app.js</code> (lowercase) sits in the same folder as index.html, '+
-    'that it was fully committed, and that GitHub Pages finished rebuilding (repo → Actions). Details: browser console (F12) / Network tab.</div>');
+:root{
+  color-scheme: light;
+  --bg:#f6f7f9; --panel:#fff; --ink:#1b2430; --muted:#5b6673; --line:#e3e7ec;
+  --accent:#0460a9; --accent-soft:#e8f1f9; --good:#1e8e5a; --mid:#c77d00; --low:#b3433b;
+  --chip:#eef2f6; --mono:ui-monospace,SFMono-Regular,Consolas,monospace;
 }
-</script>
-</body>
-</html>
+*{box-sizing:border-box}
+body{margin:0 auto;max-width:1060px;padding:0 16px 40px;font:14px/1.5 -apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+header{padding:18px 0 6px}
+h1{font-size:20px;margin:0}
+.sub{color:var(--muted);font-size:13px;margin-top:2px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;margin:12px 0;box-shadow:0 1px 2px rgba(20,30,40,.04)}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:6px 0}
+.muted{color:var(--muted);font-size:12.5px}
+button{font:inherit;cursor:pointer;border-radius:8px;padding:7px 14px}
+button.primary{background:var(--accent);color:#fff;border:0;font-weight:600}
+button.ghost{background:#fff;border:1px solid var(--line);color:#34414e}
+button:disabled{opacity:.45;cursor:default}
+.filebtn{background:var(--accent-soft);border:1px solid #c6ddf0;color:var(--accent);border-radius:8px;padding:7px 14px;cursor:pointer;font-weight:600}
+.filebtn input{display:none}
+.privacy{font-size:12px;color:#8a5200;background:#fff7e8;border:1px solid #f0dfbe;border-radius:8px;padding:7px 10px;margin:8px 0 0}
+.gaps{font-size:12.5px}
+.gaps .gap{background:#f3ecfa;border:1px solid #e0d2f0;border-radius:8px;padding:5px 9px;margin:4px 6px 0 0;display:inline-block}
+
+.cards{display:flex;flex-direction:column;gap:9px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:9px 12px}
+.card.confirmed{border-left:4px solid var(--good)}
+.card.review{border-left:4px solid var(--mid)}
+.card.ignored{opacity:.55;border-left:4px solid #b9c2cb}
+.card.unmapped{border-left:4px solid var(--low)}
+.chead{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.colname{font-weight:650}
+.samples{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.pill{font-size:10.5px;text-transform:uppercase;letter-spacing:.4px;border-radius:5px;padding:1px 7px;border:1px solid var(--line);background:#fff;color:#5c6f82}
+.pill.ok{background:var(--good);color:#fff;border-color:var(--good)}
+.pill.rev{background:var(--mid);color:#fff;border-color:var(--mid)}
+.pill.un{background:var(--low);color:#fff;border-color:var(--low)}
+.badge{font-size:10.5px;border-radius:5px;padding:1px 7px;color:#fff}
+.b-lex{background:#4a6fa5}.b-heu{background:#7b5ea7}.b-val{background:#3d8f77}.b-yaml{background:#846a2a}.b-sem{background:#2e7d9e}
+.confwrap{margin-left:auto;display:flex;align-items:center;gap:7px}
+.confbar{width:80px;height:7px;background:#e8ecf0;border-radius:4px;overflow:hidden}
+.confbar i{display:block;height:100%}
+.conftxt{font-size:11.5px;font-weight:650;width:76px;text-align:right}
+.hi{color:var(--good)}.md{color:var(--mid)}.lo{color:var(--low)}
+.mapline{font-size:12.5px;margin:5px 0 0;color:#2c3a48}
+.curie{font-family:var(--mono);font-size:11px;background:var(--chip);border-radius:5px;padding:1px 6px}
+.chiprow{margin-top:4px}
+.chip{display:inline-block;font-size:11px;background:var(--chip);border:1px solid var(--line);border-radius:10px;padding:1px 8px;margin:2px 4px 0 0}
+.chip.newind{background:#f3ecfa;border-color:#e0d2f0}
+.note{font-size:12px;color:var(--muted);margin-top:4px}
+.cbtns{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap}
+.cbtns button{padding:4px 11px;font-size:12px}
+details.edit{margin-top:7px;font-size:12.5px}
+details.edit summary{cursor:pointer;color:var(--accent)}
+.editgrid{display:grid;grid-template-columns:140px 1fr;gap:6px 10px;margin-top:8px;align-items:center}
+.editgrid select,.editgrid input{font:inherit;padding:4px 7px;border:1px solid var(--line);border-radius:7px;background:#fff;max-width:420px}
+#defaultKeys{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:7px;background:#fff;width:260px}
+.chipx{border:0;background:transparent;color:var(--low);cursor:pointer;font-size:11px;padding:0 1px;line-height:1}
+.resedit{margin-top:9px;font-size:12.5px;border-top:1px dashed var(--line);padding-top:7px}
+.resedit select{font:inherit;padding:4px 7px;border:1px solid var(--line);border-radius:7px;background:#fff;max-width:300px}
+#exportPre{white-space:pre-wrap;font-family:var(--mono);font-size:11.5px;background:var(--chip);border-radius:8px;padding:10px;max-height:420px;overflow:auto}
+footer{margin-top:18px;line-height:1.6}
