@@ -5,9 +5,21 @@
    Everything runs client-side; no data leaves the browser.
    ========================================================================= */
 "use strict";
+window.__APP_LOADED__ = true;   // checked by index.html to detect a missing/404 app.js
+
+/* ---- visible error reporting: nothing may fail silently ---- */
+function showFatal(msg){
+  let b=document.getElementById("fatal");
+  if(!b){ b=document.createElement("div"); b.id="fatal";
+    b.style.cssText="background:#fdecea;border:1px solid #b3433b;color:#7a2d28;border-radius:8px;padding:9px 12px;margin:10px 0;font-size:13px;white-space:pre-wrap";
+    document.body.prepend(b); }
+  b.textContent += (b.textContent?"\n":"")+"⚠ "+msg;
+  console.error(msg);
+}
+window.addEventListener("error", e=>showFatal((e.message||"script error")+(e.filename?"  ["+e.filename.split("/").pop()+":"+e.lineno+"]":"")));
+window.addEventListener("unhandledrejection", e=>showFatal("async error: "+((e.reason&&(e.reason.message||e.reason))||"unknown")));
 
 let ONT = null;          // ontology.json
-let SEED = null;         // mappings.seed.json
 let STATE = { fileName:null, headers:[], rows:[], cols:[], maps:[] };
 const LS_KEY = "ontology-mapping-studio-v1";
 
@@ -81,7 +93,7 @@ function profileColumn(name, rows){
   if(!vals.length) type="empty";
   const nm=norm(name);
   return {
-    name, type, nonEmpty:vals.length, samples:distinct.slice(0,3),
+    name, type, nonEmpty:vals.length, samples:distinct.slice(0,3), distincts:distinct.slice(0,40),
     isJunk: /^column_?\d*$/i.test(nm)||nm==="y n"||nm==="yes no"||nm==="planned actual"||nm==="",
     planned: /\bplanned?\b/i.test(name) && !/actual/i.test(name),
     actual: /\bactual\b/i.test(name) && !/plann/i.test(name),
@@ -182,8 +194,56 @@ async function candidatesFor(prof){
   return [...map.values()].sort((a,b)=>b.conf-a.conf);
 }
 
+/* ---------------------- generic (Class, Individual) restrictions ---------------------- */
+function assertedType(indId){ const t=(ONT.individuals[indId]||{}).types||[]; return t[0]||null; }
+function typeOk(indId, classId){ // individual's asserted or inferred types include classId?
+  const ts=(ONT.individuals[indId]||{}).types||[];
+  return ts.some(t=>t===classId||ancestors(t).includes(classId));
+}
+/* AI proposal: scan the column's cell values for ontology individuals (key-value data models) */
+function valueRestrictions(prof){
+  const out=[];
+  for(const [iid,ind] of Object.entries(ONT.individuals)){
+    const names=[ind.label, ...(ind.syns||[]), ind.longName].filter(Boolean).map(norm);
+    const hit=(prof.distincts||[]).find(v=>names.includes(norm(v)));
+    if(hit) out.push({classId:assertedType(iid), indId:iid, why:`cell value “${hit}” matches individual ${ind.label} : ${lbl(assertedType(iid))}`});
+  }
+  return out;
+}
+function mergeRestr(restr, adds, sources){
+  for(const a of adds){
+    if(!restr.some(r=>r.indId===a.indId && r.classId===a.classId)){
+      restr.push({classId:a.classId, indId:a.indId});
+      sources.push({src:a.sem?"semantic":"heuristic", txt:a.why});
+    }
+  }
+}
+
+/* semantic value matching: embed distinct cell values, compare to individual embeddings */
+const VALCACHE=new Map();
+async function semValueRestrictions(prof){
+  if(!SEM.ready) return [];
+  const inds=SEM.entities.map((e,i)=>({id:e.id,kind:e.kind,vec:SEM.vecs[i]})).filter(e=>e.kind==="individual");
+  if(!inds.length) return [];
+  const vals=(prof.distincts||[]).filter(v=>v.length>=2 && v.length<=60 && !/^\d+([.,]\d+)?$/.test(v)).slice(0,25);
+  const out=[];
+  for(const v of vals){
+    let vec=VALCACHE.get(v);
+    if(!vec){ [vec]=await embedAll([v]); VALCACHE.set(v,vec); }
+    for(const ind of inds){
+      const sim=cosSim(vec,ind.vec);
+      if(sim>=0.6) out.push({classId:assertedType(ind.id), indId:ind.id, sem:true,
+        why:`cell value “${v}” ≈ individual ${lbl(ind.id)} : ${lbl(assertedType(ind.id))} (semantic, cosine ${sim.toFixed(2)})`});
+    }
+  }
+  return out;
+}
+
 /* ---------------------- proposal engine ---------------------- */
 function keyCols(){
+  // user-defined default keys take precedence; heuristic guess otherwise
+  const manual=(($("defaultKeys")&&$("defaultKeys").value)||"").split(",").map(x=>x.trim()).filter(Boolean);
+  if(manual.length) return manual;
   const h=STATE.headers;
   const keys=[];
   const study=h.find(x=>/^study$/i.test(x)); if(study) keys.push(study);
@@ -214,7 +274,7 @@ async function proposeForColumn(prof){
     if(topInd && topInd.conf>=0.6){
       indId=topInd.id; conf=Math.max(conf,0.6+0.3*topInd.conf);
       sources.push({src:topInd.sem?"semantic":"lexical",txt:`'${topInd.term}' ≈ individual ${lbl(topInd.id)} (${topInd.how}, ${Math.round(topInd.conf*100)}%)`});
-      restr.push({classId:"NV:C0047", indId:topInd.id});
+      restr.push({classId:assertedType(topInd.id)||"NV:C0047", indId:topInd.id}); // asserted type, e.g. SIV : Site Milestone Name
     } else {
       const guess = prof.name.replace(/\(.*?\)/g," ").replace(/[\/|]/g," ").replace(/\b(planned|actual|date|completion)\b/gi," ").replace(/\s+/g," ").trim();
       newInd={label:guess||prof.name, classId:"NV:C0047"};
@@ -226,6 +286,7 @@ async function proposeForColumn(prof){
     if(plannedActual==="actual"){ restr.push({classId:"NCIT:C16203"}); notes.push("'actual' modeled via Milestone's wasGeneratedBy union class NCIT:C16203 (unlabeled in ontology)."); }
     sources.push({src:"owl",txt:"validated: Site Milestone ⊑ Milestone ⊑ (inXSDDate some xsd:date); occurs-in exactly 1 Study Site; has exactly 1 Site Milestone Name"});
     conf=Math.min(conf+0.08,0.93); // OWL validation bonus: value type matches property range
+    mergeRestr(restr, [...valueRestrictions(prof), ...await semValueRestrictions(prof)], sources);
     return {col:prof.name,status:"review",classId,propId,indId,newInd,restr,plannedActual,conf,sources,note:notes.join(" "),keys:keyCols()};
   }
 
@@ -252,6 +313,7 @@ async function proposeForColumn(prof){
       else { sources.push({src:"owl",txt:"domain/range check passed"}); conf=Math.min(conf+0.05,0.95); }
       if(p && p.range==="xsd:date" && prof.type!=="excel-date"){ notes.push("⚠ range is xsd:date but values are not dates."); conf-=0.15; }
     }
+    mergeRestr(restr, [...valueRestrictions(prof), ...await semValueRestrictions(prof)], sources);
     return {col:prof.name,status:"review",classId,propId,indId,newInd,restr,plannedActual,conf:Math.max(conf,0.3),sources,note:notes.join(" "),keys:keyCols()};
   }
 
@@ -260,6 +322,7 @@ async function proposeForColumn(prof){
     propId=topProp.id; classId = ONT.dataProperties[propId].domain || null;
     sources.push({src:topProp.sem?"semantic":"lexical",txt:`'${topProp.term}' ≈ property ${lbl(propId)} (${Math.round(topProp.conf*100)}%)`});
     if(classId) sources.push({src:"owl",txt:`class ${lbl(classId)} inferred from property domain`});
+    mergeRestr(restr, [...valueRestrictions(prof), ...await semValueRestrictions(prof)], sources);
     return {col:prof.name,status:"review",classId,propId,indId,newInd,restr,plannedActual,conf:topProp.conf*0.85,sources,note:"",keys:keyCols()};
   }
 
@@ -269,18 +332,6 @@ async function proposeForColumn(prof){
 }
 
 /* ---------------------- seeds + persistence ---------------------- */
-function applySeeds(){
-  for(const s of SEED.mappings){
-    const col=STATE.headers.find(h=>h===s.col); if(!col) continue;
-    const existing=STATE.maps.filter(m=>m.col===col);
-    const m={col, status: s.note?"review":"confirmed", classId:s.classId, propId:s.propId,
-      restr:(s.restr||[]).map(r=>({...r})), plannedActual:s.plannedActual||null, conf:0.99,
-      sources:[{src:"yaml",txt:"from your site_readiness_demo.yaml"}], note:s.note||"", keys:s.keys||keyCols()};
-    // replace auto proposal with same col+prop, else add as extra mapping for that column
-    const idx=STATE.maps.findIndex(x=>x.col===col && (x.propId===s.propId || existing.length===0));
-    if(idx>=0 && !STATE.maps[idx].sources.some(x=>x.src==="yaml")) STATE.maps[idx]=m; else STATE.maps.push(m);
-  }
-}
 function saveLS(){
   try{ localStorage.setItem(LS_KEY, JSON.stringify({fileName:STATE.fileName,
     decisions:STATE.maps.map(m=>({col:m.col,propId:m.propId,status:m.status,classId:m.classId,indId:m.indId,plannedActual:m.plannedActual}))})); }catch(e){}
@@ -346,11 +397,21 @@ function render(){
         ${m.status!=="ignored"?`<button data-a="ignore" data-i="${i}" class="ghost">✗ Ignore</button>`:`<button data-a="review" data-i="${i}" class="ghost">↩ Restore</button>`}
         ${m.status==="confirmed"?`<button data-a="review" data-i="${i}" class="ghost">↩ Reopen</button>`:""}
       </div>
-      <details class="edit"><summary>✏️ Edit mapping</summary><div class="editgrid">
+      <details class="edit" ${m._editOpen?"open":""}><summary>✏️ Edit mapping</summary><div class="editgrid">
         <label>Class</label><select data-e="classId" data-i="${i}">${["", ...Object.keys(ONT.classes)].map(id=>`<option value="${id}" ${id===(m.classId||"")?"selected":""}>${id?esc(lbl(id))+" ("+id+")":"—"}</option>`).join("")}</select>
         <label>Data property</label><select data-e="propId" data-i="${i}">${["", ...Object.keys(ONT.dataProperties)].map(id=>`<option value="${id}" ${id===(m.propId||"")?"selected":""}>${id?esc(lbl(id))+" ("+id+")":"—"}</option>`).join("")}</select>
-        <label>Milestone name</label><select data-e="indId" data-i="${i}"><option value="">—</option>${Object.keys(ONT.individuals).map(id=>`<option value="${id}" ${id===(m.indId||"")?"selected":""}>${esc(lbl(id))} (${id})</option>`).join("")}<option value="__new__" ${m.newInd?"selected":""}>＋ suggest new individual…</option></select>
-        <label>Planned / actual</label><select data-e="plannedActual" data-i="${i}"><option value="">—</option><option ${m.plannedActual==="planned"?"selected":""}>planned</option><option ${m.plannedActual==="actual"?"selected":""}>actual</option></select>
+        <label>Key fields</label><input data-e="keys" data-i="${i}" value="${esc((m.keys||[]).join(", "))}" placeholder="comma-separated column names">
+      </div>
+      <div class="resedit">
+        <b>Restrictions (key–value context)</b>
+        <div class="chiprow">${m.restr.length? m.restr.map((r,ri)=>
+          `<span class="chip">${esc(lbl(r.classId))}${r.indId?` = <b>${esc(lbl(r.indId))}</b>`:""}${r.propId?` via ${esc(lbl(r.propId))} (key)`:""}${r.newInd&&m.newInd?` = ＋“${esc(m.newInd.label)}” (new)`:""} <button class="chipx" title="remove" data-a="rmres" data-i="${i}" data-r="${ri}">✗</button></span>`).join("") : '<span class="muted">none</span>'}</div>
+        <div class="row">
+          <select data-role="resClass"><option value="">class (optional)…</option>${Object.keys(ONT.classes).map(id=>`<option value="${id}">${esc(lbl(id))} (${id})</option>`).join("")}</select>
+          <select data-role="resInd"><option value="">individual…</option>${Object.keys(ONT.individuals).map(id=>`<option value="${id}">${esc(lbl(id))} : ${esc(lbl(assertedType(id)||"?"))}</option>`).join("")}</select>
+          <button class="ghost" data-a="addres" data-i="${i}">＋ Add restriction</button>
+        </div>
+        <div class="note">Pick an individual (its asserted class is used automatically, e.g. SIV : Site Milestone Name) and/or a class for a class-only restriction. The OWL type check rejects incompatible pairs.</div>
       </div></details>`;
     el.appendChild(card);
   });
@@ -370,27 +431,41 @@ function render(){
 
 $("cards").addEventListener("click",e=>{
   const b=e.target.closest("button[data-a]"); if(!b) return;
-  const m=STATE.maps[+b.dataset.i];
-  m.status=b.dataset.a==="confirm"?"confirmed":b.dataset.a==="ignore"?"ignored":"review";
+  const m=STATE.maps[+b.dataset.i]; if(!m) return;
+  const a=b.dataset.a;
+  if(a==="rmres"){
+    m.restr.splice(+b.dataset.r,1);
+    if(!m.restr.some(r=>r.newInd)) m.newInd=null;
+    m.sources.push({src:"owl",txt:"restriction removed manually"});
+    m._editOpen=true; render(); return;
+  }
+  if(a==="addres"){
+    const det=b.closest("details");
+    const rc=det.querySelector('[data-role=resClass]').value||null;
+    const ri=det.querySelector('[data-role=resInd]').value||null;
+    if(!rc && !ri) return;
+    if(ri && rc && !typeOk(ri,rc)){
+      alert(`OWL type check: “${lbl(ri)}” is a ${lbl(assertedType(ri))}, not a ${lbl(rc)}. Pick a compatible class or leave the class empty to use the asserted type.`);
+      return;
+    }
+    const cid=rc||assertedType(ri);
+    if(m.restr.some(r=>r.classId===cid&&(r.indId||null)===(ri||null))) return; // duplicate
+    m.restr.push(ri?{classId:cid,indId:ri}:{classId:cid});
+    m.sources.push({src:"owl",txt:`manual restriction: ${lbl(cid)}${ri?" = "+lbl(ri):""}`});
+    m._editOpen=true; render(); return;
+  }
+  m.status=a==="confirm"?"confirmed":a==="ignore"?"ignored":"review";
+  m._editOpen=false;
   render();
 });
 $("cards").addEventListener("change",e=>{
-  const s=e.target.closest("select[data-e]"); if(!s) return;
+  const s=e.target.closest("select[data-e],input[data-e]"); if(!s) return;
+  if(!s.dataset.i) return; // resClass/resInd selects are handled by the Add button
   const m=STATE.maps[+s.dataset.i]; const f=s.dataset.e;
-  if(f==="indId"){
-    if(s.value==="__new__"){ const g=prompt("Label for the new Site Milestone Name individual:", m.newInd?m.newInd.label:m.col);
-      if(g){ m.newInd={label:g,classId:"NV:C0047"}; m.indId=null; } }
-    else { m.indId=s.value||null; m.newInd=null; }
-    m.restr=m.restr.filter(r=>r.classId!=="NV:C0047"&&r.classId!=="NV:C0040");
-    if(m.indId) m.restr.push({classId:"NV:C0047",indId:m.indId});
-    else if(m.newInd) m.restr.push({classId:"NV:C0047",newInd:true});
-  } else if(f==="plannedActual"){
-    m.plannedActual=s.value||null;
-    m.restr=m.restr.filter(r=>r.classId!=="NV:C0065"&&r.classId!=="NCIT:C16203");
-    if(m.plannedActual==="planned") m.restr.push({classId:"NV:C0065",indId:"NV:Test_I0071"});
-    if(m.plannedActual==="actual") m.restr.push({classId:"NCIT:C16203"});
-  } else m[f]=s.value||null;
-  m.sources.push({src:"owl",txt:"manually edited"});
+  if(f==="keys") m.keys=s.value.split(",").map(x=>x.trim()).filter(Boolean);
+  else m[f]=s.value||null;
+  m.sources.push({src:"owl",txt:"manually edited ("+f+")"});
+  m._editOpen=true;
   render();
 });
 
@@ -510,26 +585,34 @@ function runCSV(text, fileName){
   if(!headers.length){ $("csvInfo").textContent="Could not parse CSV."; return; }
   STATE={fileName, headers, rows, cols:[], maps:[]};
   STATE.cols=headers.map(h=>profileColumn(h,rows));
+  if($("defaultKeys") && !$("defaultKeys").value){
+    const guess=[]; const st=headers.find(x=>/^study$/i.test(x)); if(st) guess.push(st);
+    const si=headers.find(x=>/^site ?id$/i.test(x)); if(si) guess.push(si);
+    $("defaultKeys").value=guess.join(", ");
+  }
   $("csvInfo").textContent=`${fileName}: ${headers.length} columns · ${rows.length} rows`;
   $("propose").disabled=false;
   $("cards").innerHTML=`<div class="card"><div class="chead"><span class="colname">CSV loaded.</span><span class="muted">Click “⚙️ Propose mappings” to run the pipeline.</span></div></div>`;
 }
 $("fileInput").addEventListener("change",e=>{
   const f=e.target.files[0]; if(!f) return;
-  const r=new FileReader(); r.onload=()=>runCSV(r.result,f.name); r.readAsText(f,"utf-8");
+  const r=new FileReader();
+  r.onload=()=>{ try{ runCSV(r.result,f.name); }catch(err){ showFatal("CSV parsing failed: "+err.message); } };
+  r.onerror=()=>showFatal("Could not read the selected file.");
+  r.readAsText(f,"utf-8");
 });
 $("loadSample").onclick=async()=>{
   try{ const t=await (await fetch("sample_data.csv")).text(); runCSV(t,"sample_data.csv"); }
   catch(e){ $("csvInfo").textContent="Sample fetch failed (open via http/GitHub Pages, not file://)."; }
 };
 async function runProposals(){
+  if(!ONT){ showFatal("Cannot propose mappings: ontology.json was not loaded (see message above)."); return; }
   const btn=$("propose"); btn.disabled=true; const old=btn.textContent;
   STATE.maps=[];
   for(let i=0;i<STATE.cols.length;i++){
     btn.textContent=`⚙️ Proposing… ${i+1}/${STATE.cols.length}`;
     STATE.maps.push(await proposeForColumn(STATE.cols[i]));
   }
-  applySeeds();
   const restored=loadLS();
   render();
   btn.textContent=old; btn.disabled=false;
@@ -541,10 +624,13 @@ $("semBtn").onclick=initSemantic;
 
 (async function boot(){
   try{
-    ONT = await (await fetch("ontology.json")).json();
-    SEED = await (await fetch("mappings.seed.json")).json();
+    const or = await fetch("ontology.json");
+    if(or.status && or.status>=400) throw new Error("ontology.json → HTTP "+or.status+" (file missing next to index.html?)");
+    ONT = await or.json();
+    $("csvInfo").textContent = "✓ ready — ontology loaded ("+Object.keys(ONT.classes).length+" classes, "+
+      Object.keys(ONT.dataProperties).length+" data properties). Load a CSV to start.";
     console.log("Mapping Studio ready:", Object.keys(ONT.classes).length,"classes,",Object.keys(ONT.dataProperties).length,"data properties");
   }catch(e){
-    document.body.insertAdjacentHTML("afterbegin",`<div class="panel" style="border-color:#b3433b">Failed to load ontology.json / mappings.seed.json — serve these files over http (GitHub Pages) alongside index.html. (${esc(e.message)})</div>`);
+    showFatal("Failed to load ontology.json — the file must sit next to index.html and be served over http(s), not file://. ("+e.message+")");
   }
 })();
