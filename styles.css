@@ -54,5 +54,9 @@ details.edit{margin-top:7px;font-size:12.5px}
 details.edit summary{cursor:pointer;color:var(--accent)}
 .editgrid{display:grid;grid-template-columns:140px 1fr;gap:6px 10px;margin-top:8px;align-items:center}
 .editgrid select,.editgrid input{font:inherit;padding:4px 7px;border:1px solid var(--line);border-radius:7px;background:#fff;max-width:420px}
+#defaultKeys{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:7px;background:#fff;width:260px}
+.chipx{border:0;background:transparent;color:var(--low);cursor:pointer;font-size:11px;padding:0 1px;line-height:1}
+.resedit{margin-top:9px;font-size:12.5px;border-top:1px dashed var(--line);padding-top:7px}
+.resedit select{font:inherit;padding:4px 7px;border:1px solid var(--line);border-radius:7px;background:#fff;max-width:300px}
 #exportPre{white-space:pre-wrap;font-family:var(--mono);font-size:11.5px;background:var(--chip);border-radius:8px;padding:10px;max-height:420px;overflow:auto}
 footer{margin-top:18px;line-height:1.6}
