@@ -1,5 +1,3 @@
-# MappingStudio
-
 # Ontology Mapping Studio
 
 A static, client-side web app that maps CSV columns to OWL ontology concepts (classes, data properties, restrictions) and exports the result as **YAML** (your `schema_version 0.1` format), **R2RML** (for Morph-KGC / Ontop), or **JSON**.
