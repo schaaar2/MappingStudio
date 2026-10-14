@@ -25,6 +25,9 @@
     <span id="semStatus" class="muted">off — lexical + OWL only</span>
   </div>
   <div class="row">
+    <label class="muted">🔑 Default key fields&nbsp;<input id="defaultKeys" placeholder="e.g. Study, SiteID" title="Used for new proposals; override per mapping in its editor"></label>
+  </div>
+  <div class="row">
     <button id="propose" class="primary" disabled>⚙️ Propose mappings</button>
     <button id="exportYaml" class="ghost" disabled>⬇ Export YAML</button>
     <button id="exportR2rml" class="ghost" disabled>⬇ Export R2RML (.ttl)</button>
@@ -47,5 +50,14 @@
 <footer class="muted">Neuro-symbolic mapping pipeline: 🔤 lexical match on labels/synonyms · 🧪 value profiling (dates, booleans, identifiers) · 🕸 OWL validation (domain/range, restriction templates) · ✅ human confirmation. Ontology: site_readiness_demo.ttl (ClinOps-Core / NCIT / USDM / BFO / RO).</footer>
 
 <script src="app.js"></script>
+<script>
+/* Fail-loud guard: if app.js was not found/loaded (e.g. 404 on GitHub Pages), say so on the page. */
+if(!window.__APP_LOADED__){
+  document.body.insertAdjacentHTML("afterbegin",
+    '<div style="background:#fdecea;border:1px solid #b3433b;color:#7a2d28;border-radius:8px;padding:10px 12px;margin:10px 0;font-size:13px">'+
+    '⚠ <b>app.js did not load.</b> Check that a file named exactly <code>app.js</code> (lowercase) sits in the same folder as index.html, '+
+    'that it was fully committed, and that GitHub Pages finished rebuilding (repo → Actions). Details: browser console (F12) / Network tab.</div>');
+}
+</script>
 </body>
 </html>
