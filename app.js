@@ -19,9 +19,13 @@ function showFatal(msg){
 window.addEventListener("error", e=>showFatal((e.message||"script error")+(e.filename?"  ["+e.filename.split("/").pop()+":"+e.lineno+"]":"")));
 window.addEventListener("unhandledrejection", e=>showFatal("async error: "+((e.reason&&(e.reason.message||e.reason))||"unknown")));
 
-let ONT = null;          // ontology.json
+let ONT = null;          // ontology model built from a user-loaded .ttl/.rdf/.owl file
+let CFG = {};            // optional well-known concepts resolved by URI from the loaded ontology
 let STATE = { fileName:null, headers:[], rows:[], cols:[], maps:[] };
 const LS_KEY = "ontology-mapping-studio-v1";
+/* generic keywords hinting that a date column is a milestone/event (used only when the
+   loaded ontology actually contains a milestone-like class, see CFG) */
+const MS_KEYWORDS=["siv","fpfv","initiation visit","activation","qualification","training","calibration","questionnaire","shipment","received","submitted","completed","visit","milestone"];
 
 /* ---------------------- utilities ---------------------- */
 const $ = id => document.getElementById(id);
@@ -144,24 +148,31 @@ async function initSemantic(){
     st.textContent="loading all-MiniLM-L6-v2 (first time may take a moment)…";
     SEM.pipe = await T.pipeline("feature-extraction",
       SELF_HOSTED_MODEL ? "all-MiniLM-L6-v2" : "Xenova/all-MiniLM-L6-v2");
-    st.textContent="embedding ontology entities…";
-    SEM.entities=[]; const texts=[];
-    for(const pool of [ONT.classes, ONT.dataProperties, ONT.individuals]){
-      const kind = pool===ONT.classes?"class":pool===ONT.dataProperties?"dataProperty":"individual";
-      for(const [id,e] of Object.entries(pool)){
-        if(e.unlabeled) continue;
-        SEM.entities.push({id,kind});
-        texts.push([e.label, ...(e.syns||[]), e.longName||"", e.def||""].filter(Boolean).join(". "));
-      }
-    }
-    SEM.vecs = await embedAll(texts);
-    SEM.ready = true;
-    st.textContent = "✓ semantic matching active ("+SEM.entities.length+" entity embeddings, in-browser)";
     $("semBtn").disabled = true;
+    if(ONT) await embedOntology();
+    else st.textContent="✓ model loaded — will embed entities once an ontology is loaded";
   }catch(e){
     console.error("semantic init failed", e);
     st.textContent = "✗ model unavailable ("+e.message+") — continuing with lexical + OWL only";
   }
+}
+/* (re)embed all entities of the currently loaded ontology */
+async function embedOntology(){
+  if(!SEM.pipe || !ONT) return;
+  SEM.ready=false;
+  $("semStatus").textContent="embedding ontology entities…";
+  SEM.entities=[]; const texts=[];
+  for(const pool of [ONT.classes, ONT.dataProperties, ONT.individuals]){
+    const kind = pool===ONT.classes?"class":pool===ONT.dataProperties?"dataProperty":"individual";
+    for(const [id,e] of Object.entries(pool)){
+      if(e.unlabeled) continue;
+      SEM.entities.push({id,kind});
+      texts.push([e.label, ...(e.syns||[]), e.longName||"", e.def||""].filter(Boolean).join(". "));
+    }
+  }
+  SEM.vecs = await embedAll(texts);
+  SEM.ready = true;
+  $("semStatus").textContent = "✓ semantic matching active ("+SEM.entities.length+" entity embeddings, in-browser)";
 }
 async function embedAll(texts){
   const out=[];
@@ -261,30 +272,31 @@ async function proposeForColumn(prof){
   const lex=await candidatesFor(prof);
   const topProp=lex.find(c=>c.kind==="dataProperty");
   const topClass=lex.find(c=>c.kind==="class");
-  // OWL type check: only individuals typed (a subclass of) Milestone Name may fill the milestone-name slot
-  const isMilestoneName=id=>(ONT.individuals[id]?.types||[]).some(t=>t==="NV:C0040"||t==="NV:C0047"||ancestors(t).includes("NV:C0040"));
-  const topInd=lex.find(c=>c.kind==="individual" && isMilestoneName(c.id));
+  // OWL type check: only individuals typed (a subclass of) the milestone-name class may fill that slot
+  const isMsName=id=>CFG.msNameTop ? (ONT.individuals[id]?.types||[]).some(t=>t===CFG.msNameTop||t===CFG.msName||ancestors(t).includes(CFG.msNameTop)) : true;
+  const topInd=lex.find(c=>c.kind==="individual" && isMsName(c.id));
 
-  /* --- Template 1: milestone date column --- */
-  const msKeyword = ONT.milestoneKeywords.some(k=>norm(prof.name).includes(k));
-  if(prof.type==="excel-date" && (msKeyword || prof.dateWord)){
-    classId="NV:C0042"; propId="time:inXSDDate"; conf=0.62;
-    sources.push({src:"heuristic",txt:"date-typed column with milestone keyword → Site Milestone + inXSDDate template"});
-    restr.push({classId:"NCIT:C15206", propId:"NV:D0091"}, {classId:"NCIT:C83100", propId:"NV:D0090"});
+  /* --- Template 1: milestone/event date column (only if the loaded ontology has the pattern) --- */
+  const msKeyword = MS_KEYWORDS.some(k=>norm(prof.name).includes(k));
+  if(prof.type==="excel-date" && (msKeyword || prof.dateWord) && CFG.milestone && CFG.dateProp){
+    classId=CFG.siteMilestone||CFG.milestone; propId=CFG.dateProp; conf=0.62;
+    sources.push({src:"heuristic",txt:`date-typed column with event keyword → ${lbl(classId)} + ${lbl(propId)} template`});
+    if(CFG.studyKey) restr.push({classId:CFG.studyKey.cls, propId:CFG.studyKey.prop});
+    if(CFG.siteKey)  restr.push({classId:CFG.siteKey.cls,  propId:CFG.siteKey.prop});
     if(topInd && topInd.conf>=0.6){
       indId=topInd.id; conf=Math.max(conf,0.6+0.3*topInd.conf);
       sources.push({src:topInd.sem?"semantic":"lexical",txt:`'${topInd.term}' ≈ individual ${lbl(topInd.id)} (${topInd.how}, ${Math.round(topInd.conf*100)}%)`});
-      restr.push({classId:assertedType(topInd.id)||"NV:C0047", indId:topInd.id}); // asserted type, e.g. SIV : Site Milestone Name
-    } else {
+      restr.push({classId:assertedType(topInd.id)||CFG.msName, indId:topInd.id}); // asserted type, e.g. SIV : Site Milestone Name
+    } else if(CFG.msName){
       const guess = prof.name.replace(/\(.*?\)/g," ").replace(/[\/|]/g," ").replace(/\b(planned|actual|date|completion)\b/gi," ").replace(/\s+/g," ").trim();
-      newInd={label:guess||prof.name, classId:"NV:C0047"};
-      restr.push({classId:"NV:C0047", newInd:true});
-      notes.push(`ontology gap: no Milestone Name individual matches “${guess||prof.name}” — suggest adding one (like SIV).`);
+      newInd={label:guess||prof.name, classId:CFG.msName};
+      restr.push({classId:CFG.msName, newInd:true});
+      notes.push(`ontology gap: no ${lbl(CFG.msName)} individual matches “${guess||prof.name}” — suggest adding one.`);
       conf=Math.max(conf-0.07,0.4);
     }
-    if(plannedActual==="planned") restr.push({classId:"NV:C0065", indId:"NV:Test_I0071"});
-    if(plannedActual==="actual"){ restr.push({classId:"NCIT:C16203"}); notes.push("'actual' modeled via Milestone's wasGeneratedBy union class NCIT:C16203 (unlabeled in ontology)."); }
-    sources.push({src:"owl",txt:"validated: Site Milestone ⊑ Milestone ⊑ (inXSDDate some xsd:date); occurs-in exactly 1 Study Site; has exactly 1 Site Milestone Name"});
+    if(plannedActual==="planned" && CFG.planning && CFG.planningInd) restr.push({classId:CFG.planning, indId:CFG.planningInd});
+    if(plannedActual==="actual" && CFG.actualGen){ restr.push({classId:CFG.actualGen}); notes.push(`'actual' modeled via wasGeneratedBy union class ${CFG.actualGen}.`); }
+    sources.push({src:"owl",txt:`validated: ${lbl(classId)} subclass chain carries (${lbl(propId)} some xsd:date) and the occurs-in / has-name restrictions of the loaded ontology`});
     conf=Math.min(conf+0.08,0.93); // OWL validation bonus: value type matches property range
     mergeRestr(restr, [...valueRestrictions(prof), ...await semValueRestrictions(prof)], sources);
     return {col:prof.name,status:"review",classId,propId,indId,newInd,restr,plannedActual,conf,sources,note:notes.join(" "),keys:keyCols()};
@@ -299,10 +311,10 @@ async function proposeForColumn(prof){
       propId=topProp.id; conf=Math.max(conf,(topClass.conf+topProp.conf)/2);
       sources.push({src:topProp.sem?"semantic":"lexical",txt:`'${topProp.term}' ≈ property ${lbl(topProp.id)} (${Math.round(topProp.conf*100)}%)`});
     } else {
-      // pick a plausible datatype property by range/type
-      if(prof.type==="excel-date") propId="time:inXSDDate";
-      else if(/name/i.test(prof.name)) propId = classId==="USDM:StudySite"||classId==="NCIT:C80403" ? "USDM:StudySite-name" : "NV:D0021";
-      else if(prof.type==="number"||/id|number|code/i.test(prof.name)) propId="NV:D0090";
+      // pick a plausible datatype property by range/type — generic lookups over the loaded ontology
+      if(prof.type==="excel-date") propId=CFG.dateProp;
+      else if(/name/i.test(prof.name)) propId=pickDataProp(/name/i, classId);
+      else if(prof.type==="number"||/id|number|code/i.test(prof.name)) propId=pickDataProp(/identifier|\bid\b|number|code/i, classId);
       if(propId) sources.push({src:"heuristic",txt:`property ${lbl(propId)} inferred from value type '${prof.type}'`});
     }
     // OWL validation
@@ -357,7 +369,7 @@ function badge(s){ const cls=s.src==="lexical"?"b-lex":s.src==="semantic"?"b-sem
 
 function restrChips(m){
   return m.restr.map(r=>{
-    if(r.newInd || (!r.indId && !r.propId && r.classId==="NV:C0047"))
+    if(r.newInd)
       return `<span class="chip newind">＋ new individual: “${esc(m.newInd?m.newInd.label:"?")}” : ${esc(lbl(r.classId))}</span>`;
     if(r.indId) return `<span class="chip">${esc(lbl(r.classId))} = <b>${esc(lbl(r.indId))}</b></span>`;
     if(r.propId) return `<span class="chip">${esc(lbl(r.classId))} via ${esc(lbl(r.propId))} (key)</span>`;
@@ -422,7 +434,7 @@ function render(){
     `<b>${STATE.headers.length}</b> columns · <span class="hi">✓ ${n("confirmed")} confirmed</span> · <span class="md">⚠ ${n("review")} to review</span> · <span class="lo">${n("unmapped")} unmapped</span> · ${n("ignored")} ignored`:"";
   const gaps=STATE.maps.filter(m=>m.newInd&&m.status!=="ignored");
   const unm=STATE.maps.filter(m=>m.status==="unmapped");
-  $("gaps").innerHTML = (gaps.length?`<b>🧩 Ontology gaps — suggested new Site Milestone Name individuals:</b> ${gaps.map(g=>`<span class="gap">“${esc(g.newInd.label)}” (from column: ${esc(g.col)})</span>`).join("")}<br>`:"")+
+  $("gaps").innerHTML = (gaps.length?`<b>🧩 Ontology gaps — suggested new individuals:</b> ${gaps.map(g=>`<span class="gap">“${esc(g.newInd.label)}” : ${esc(lbl(g.newInd.classId)||"?")} (from column: ${esc(g.col)})</span>`).join("")}<br>`:"")+
     (unm.length?`<b>🚧 No ontology concept found for:</b> ${unm.slice(0,12).map(u=>`<span class="gap">${esc(u.col)}</span>`).join("")}${unm.length>12?" …":""}`:"");
   const has=STATE.maps.some(m=>m.status==="confirmed");
   ["exportYaml","exportR2rml","exportJson"].forEach(id=>$(id).disabled=!has);
@@ -474,7 +486,7 @@ function yq(s){ return '"'+String(s).replace(/"/g,'\\"')+'"'; }
 function exportYAML(){
   const L=[];
   L.push("# Generated by Ontology Mapping Studio — "+new Date().toISOString().slice(0,10));
-  L.push("# Source ontology: site_readiness_demo.ttl · Table: "+(STATE.fileName||"data.csv"));
+  L.push("# Source ontology: "+(ONT.source_file||"(loaded in browser)")+" · Table: "+(STATE.fileName||"data.csv"));
   L.push('schema_version: "0.1"');
   L.push("");
   L.push("mappings:");
@@ -540,12 +552,12 @@ function exportR2RML(){
     const poms=[];
     if(m.propId) poms.push(`  rr:predicateObjectMap [ rr:predicate <${uri(m.propId)}> ; rr:objectMap [ rr:column "${m.col}"${ONT.dataProperties[m.propId]&&ONT.dataProperties[m.propId].range==="xsd:date"?' ; rr:datatype xsd:date':''} ] ]`);
     for(const r of m.restr){
-      if(r.indId) poms.push(`  rr:predicateObjectMap [ rr:predicate <${uri("NV:P0102")}> ; rr:objectMap [ rr:constant <${uri(r.indId)}> ] ]`);
-      else if(r.propId){ const keyCol=r.classId==="NCIT:C15206"?m.keys[0]:m.keys[1]||m.keys[0];
+      if(r.indId){ const pred=CFG.hasNameProp?uri(CFG.hasNameProp):"urn:x-mappingstudio:hasContext";
+        poms.push(`  rr:predicateObjectMap [ rr:predicate <${pred}> ; rr:objectMap [ rr:constant <${uri(r.indId)}> ] ]  # context: ${lbl(r.classId)} = ${lbl(r.indId)}`); }
+      else if(r.propId){ const ki=m.restr.filter(x=>x.propId).indexOf(r); const keyCol=m.keys[ki]||m.keys[0];
         poms.push(`  rr:predicateObjectMap [ rr:predicate <${uri(r.propId)}> ; rr:objectMap [ rr:column "${keyCol}" ] ]  # context key: ${lbl(r.classId)}`); }
       else if(r.newInd&&m.newInd) poms.push(`  # TODO ontology gap: create individual "${m.newInd.label}" : ${lbl(r.classId)} and add rr:constant here`);
-      else if(r.classId==="NCIT:C16203") poms.push(`  rr:predicateObjectMap [ rr:predicate <http://www.w3.org/ns/prov#wasGeneratedBy> ; rr:objectMap [ rr:template "urn:ssu:actual-recording" ] ]  # 'actual' marker (NCIT:C16203)`);
-      else if(r.classId==="NV:C0065"&&!r.indId) poms.push(`  # planning activity restriction`);
+      else poms.push(`  rr:predicateObjectMap [ rr:predicate <http://www.w3.org/ns/prov#wasGeneratedBy> ; rr:objectMap [ rr:template "urn:x-mappingstudio:${(lbl(r.classId)||"ctx").replace(/[^A-Za-z0-9]+/g,"_")}" ] ]  # class-only restriction: ${lbl(r.classId)}`);
     }
     L.push(poms.join(" ;\n")+" .");
     L.push("");
@@ -606,7 +618,7 @@ $("loadSample").onclick=async()=>{
   catch(e){ $("csvInfo").textContent="Sample fetch failed (open via http/GitHub Pages, not file://)."; }
 };
 async function runProposals(){
-  if(!ONT){ showFatal("Cannot propose mappings: ontology.json was not loaded (see message above)."); return; }
+  if(!ONT){ showFatal("Cannot propose mappings: no ontology loaded — use “🦉 Load ontology” first."); return; }
   const btn=$("propose"); btn.disabled=true; const old=btn.textContent;
   STATE.maps=[];
   for(let i=0;i<STATE.cols.length;i++){
@@ -622,15 +634,235 @@ $("propose").onclick=runProposals;
 $("resetAll").onclick=async()=>{ try{localStorage.removeItem(LS_KEY);}catch(e){} if(STATE.cols.length) await runProposals(); };
 $("semBtn").onclick=initSemantic;
 
-(async function boot(){
-  try{
-    const or = await fetch("ontology.json");
-    if(or.status && or.status>=400) throw new Error("ontology.json → HTTP "+or.status+" (file missing next to index.html?)");
-    ONT = await or.json();
-    $("csvInfo").textContent = "✓ ready — ontology loaded ("+Object.keys(ONT.classes).length+" classes, "+
-      Object.keys(ONT.dataProperties).length+" data properties). Load a CSV to start.";
-    console.log("Mapping Studio ready:", Object.keys(ONT.classes).length,"classes,",Object.keys(ONT.dataProperties).length,"data properties");
-  }catch(e){
-    showFatal("Failed to load ontology.json — the file must sit next to index.html and be served over http(s), not file://. ("+e.message+")");
+/* =========================================================================
+   GENERIC ONTOLOGY LOADING — parse any .ttl / .rdf / .owl in the browser
+   Turtle/N-Triples via N3.js (CDN); RDF/XML via DOMParser.
+   ========================================================================= */
+const RDFNS="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+const RDFSNS="http://www.w3.org/2000/01/rdf-schema#";
+const OWLNS="http://www.w3.org/2002/07/owl#";
+const XSDNS="http://www.w3.org/2001/XMLSchema#";
+const SKOSNS="http://www.w3.org/2004/02/skos/core#";
+const OBOIO="http://www.geneontology.org/formats/oboInOwl#";
+const OBO="http://purl.obolibrary.org/obo/";
+const LABELP=[RDFSNS+"label", SKOSNS+"prefLabel", OBO+"NCIT_P108"];
+const SYNP=[OBOIO+"hasExactSynonym", OBOIO+"hasRelatedSynonym", SKOSNS+"altLabel", OBO+"IAO_0000118", OBO+"IAO_0000111"];
+const DEFP=[OBO+"IAO_0000115", SKOSNS+"definition", RDFSNS+"comment"];
+
+function parseTurtle(text){
+  if(typeof N3==="undefined") throw new Error("Turtle parser (n3.min.js) not loaded from CDN");
+  const tid=t=>t.termType==="BlankNode"?"_:"+t.value:t.value;
+  return new N3.Parser().parse(text).map(q=>({
+    s:tid(q.subject), p:q.predicate.value,
+    o:q.object.termType==="Literal"?q.object.value:tid(q.object),
+    lit:q.object.termType==="Literal"
+  }));
+}
+function parseRdfXml(text){
+  const doc=new DOMParser().parseFromString(text,"application/xml");
+  if(doc.getElementsByTagName("parsererror").length) throw new Error("not well-formed XML");
+  const triples=[]; let bn=0;
+  const rattr=(el,ln)=>el.getAttributeNS(RDFNS,ln)||el.getAttribute("rdf:"+ln);
+  function nodeEl(el){
+    let s=rattr(el,"about"); const rid=rattr(el,"ID"); const nid=rattr(el,"nodeID");
+    if(!s&&rid) s="#"+rid;
+    if(!s&&nid) s="_:"+nid;
+    if(!s) s="_:gen"+(bn++);
+    const tU=(el.namespaceURI||"")+el.localName;
+    if(tU!==RDFNS+"Description") triples.push({s,p:RDFNS+"type",o:tU,lit:false});
+    for(const ch of el.children){
+      const p=(ch.namespaceURI||"")+ch.localName;
+      const res=rattr(ch,"resource"), cnid=rattr(ch,"nodeID");
+      if(res) triples.push({s,p,o:res,lit:false});
+      else if(cnid) triples.push({s,p,o:"_:"+cnid,lit:false});
+      else if(ch.children.length){ for(const sub of ch.children){ triples.push({s,p,o:nodeEl(sub),lit:false}); } }
+      else { const txt=(ch.textContent||"").trim(); if(txt) triples.push({s,p,o:txt,lit:true}); }
+    }
+    return s;
   }
+  for(const el of doc.documentElement.children) nodeEl(el);
+  return triples;
+}
+
+/* ---- CURIE-ish ids from URIs, with stable per-namespace prefixes ---- */
+const NSPREF={[RDFSNS]:"rdfs",[OWLNS]:"owl",[SKOSNS]:"skos",[XSDNS]:"xsd",
+  "https://schema.org/":"schema","http://schema.org/":"schema",
+  "http://www.w3.org/ns/prov#":"prov","http://www.w3.org/2006/time#":"time"};
+function makeIdFactory(){
+  const nsCache={}, used=new Set(); let nsn=0;
+  return function makeId(u){
+    if(u.startsWith(OBO)){ const loc=u.slice(OBO.length); const i=loc.indexOf("_");
+      return i>0? loc.slice(0,i)+":"+loc.slice(i+1) : "obo:"+loc; }
+    const cut=Math.max(u.lastIndexOf("#"),u.lastIndexOf("/"))+1;
+    const ns=u.slice(0,cut), loc=u.slice(cut)||u;
+    let pfx=NSPREF[ns]||nsCache[ns];
+    if(!pfx){
+      const segs=ns.replace(/[#/]+$/,"").split(/[/#]/).filter(Boolean);
+      let guess=(segs.reverse().find(x=>/[a-zA-Z]{2,}/.test(x)&&!/^v?\d+$/.test(x))||("ns"+(++nsn))).replace(/[^A-Za-z0-9_-]/g,"");
+      if(/usdm/i.test(ns)) guess="usdm";
+      while(Object.values(nsCache).includes(guess)) guess+="_";
+      nsCache[ns]=pfx=guess;
+    }
+    let id=pfx+":"+loc, n=2;
+    while(used.has(id)) id=pfx+":"+loc+"~"+(n++);
+    used.add(id);
+    return id;
+  };
+}
+
+/* ---- build the internal ontology model from triples ---- */
+function buildOnt(triples, sourceName){
+  const by=new Map();
+  for(const t of triples){ if(!by.has(t.s)) by.set(t.s,[]); by.get(t.s).push(t); }
+  const P=(s,p)=>(by.get(s)||[]).filter(t=>t.p===p);
+  const vals=(s,p)=>P(s,p).map(t=>t.o);
+  const firstLit=(s,ps)=>{ for(const p of ps){ const t=P(s,p).find(x=>x.lit); if(t) return t.o; } return null; };
+  const allLits=(s,ps)=>{ const out=[]; for(const p of ps) for(const t of P(s,p)) if(t.lit) out.push(t.o); return [...new Set(out)]; };
+
+  const makeId=makeIdFactory();
+  const idOf=new Map();        // uri -> id
+  const O={source_file:sourceName, classes:{}, dataProperties:{}, objectProperties:{}, individuals:{}};
+  const xsdShort=u=>u.startsWith(XSDNS)?"xsd:"+u.slice(XSDNS.length):null;
+  const named=u=>u && !u.startsWith("_:") && !xsdShort(u);
+
+  function register(u,pool,extra){
+    if(idOf.has(u)){ const id=idOf.get(u); return id; }
+    const id=makeId(u); idOf.set(u,id);
+    const label=firstLit(u,LABELP);
+    const loc=u.slice(Math.max(u.lastIndexOf("#"),u.lastIndexOf("/"))+1);
+    pool[id]={uri:u, label:label||loc||id, unlabeled:!label,
+      syns:allLits(u,SYNP), def:firstLit(u,DEFP)||"", ...extra};
+    return id;
+  }
+  const ensureClass=u=>{ if(idOf.has(u)) return idOf.get(u);
+    return register(u,O.classes,{parents:[],restr:[]}); };
+
+  // pass 1: declared entities
+  const typesOf=s=>vals(s,RDFNS+"type");
+  for(const s of by.keys()){
+    if(!named(s)) continue;
+    const ts=typesOf(s);
+    if(ts.includes(OWLNS+"Class")||ts.includes(RDFSNS+"Class")) ensureClass(s);
+  }
+  for(const s of by.keys()){
+    if(!named(s)) continue;
+    const ts=typesOf(s);
+    if(ts.includes(OWLNS+"DatatypeProperty")) register(s,O.dataProperties,{});
+    else if(ts.includes(OWLNS+"ObjectProperty")) register(s,O.objectProperties,{});
+  }
+  for(const s of by.keys()){
+    if(!named(s)) continue;
+    if(typesOf(s).includes(OWLNS+"NamedIndividual")) register(s,O.individuals,{types:[]});
+  }
+
+  // pass 2: details
+  const idc=u=>idOf.get(u);
+  for(const [id,c] of Object.entries(O.classes)){
+    const u=c.uri;
+    for(const o of vals(u,RDFSNS+"subClassOf")){
+      if(named(o)) c.parents.push(ensureClass(o));
+      else if(o.startsWith("_:")){ // owl:Restriction bnode
+        const onP=vals(o,OWLNS+"onProperty").find(named);
+        if(!onP) continue;
+        const some=vals(o,OWLNS+"someValuesFrom")[0], only=vals(o,OWLNS+"allValuesFrom")[0],
+              onC=vals(o,OWLNS+"onClass")[0],
+              qc=firstLit(o,[OWLNS+"qualifiedCardinality",OWLNS+"cardinality",OWLNS+"minQualifiedCardinality"]);
+        const fillerU=some||only||onC; if(!fillerU) continue;
+        const filler=xsdShort(fillerU)||(named(fillerU)?ensureClass(fillerU):null); if(!filler) continue;
+        const pid=idc(onP)||register(onP, O.objectProperties,{});
+        c.restr.push({p:pid, kind: qc?("exactly "+qc):(only?"only":"some"), filler});
+      }
+    }
+    c.parents=[...new Set(c.parents)].filter(p=>p!==id);
+  }
+  for(const pool of [O.dataProperties,O.objectProperties]){
+    const isData=pool===O.dataProperties;
+    for(const [id,p] of Object.entries(pool)){
+      const u=p.uri, ts=typesOf(u);
+      const dom=vals(u,RDFSNS+"domain").find(named); if(dom) p.domain=ensureClass(dom);
+      const rng=vals(u,RDFSNS+"range").find(o=>named(o)||xsdShort(o));
+      if(rng) p.range=xsdShort(rng)||(isData?rng:ensureClass(rng));
+      const inv=vals(u,OWLNS+"inverseOf").find(named); if(inv&&idc(inv)) p.inverse=idc(inv);
+      const sup=vals(u,RDFSNS+"subPropertyOf").find(named); if(sup&&idc(sup)) p.sub=idc(sup);
+      if(ts.includes(OWLNS+"TransitiveProperty")) p.transitive=true;
+      if(ts.includes(OWLNS+"FunctionalProperty")) p.functional=true;
+    }
+  }
+  for(const [id,ind] of Object.entries(O.individuals)){
+    const u=ind.uri;
+    ind.types=vals(u,RDFNS+"type").filter(o=>named(o)&&o!==OWLNS+"NamedIndividual").map(ensureClass);
+    // literal assertions on the individual become searchable names (e.g. Long Name "Site Initiation Visit")
+    for(const t of (by.get(u)||[])){
+      if(t.lit && !LABELP.includes(t.p) && !DEFP.includes(t.p) && t.o.length>=2 && t.o.length<=80){
+        if(!ind.longName) ind.longName=t.o;
+        if(!ind.syns.includes(t.o)) ind.syns.push(t.o);
+      }
+    }
+  }
+  return O;
+}
+
+/* ---- resolve optional well-known concepts (clinical demo pattern) by URI, generic fallbacks ---- */
+function resolveCFG(){
+  const byUri={};
+  for(const pool of [ONT.classes,ONT.dataProperties,ONT.objectProperties,ONT.individuals])
+    for(const [id,e] of Object.entries(pool)) byUri[e.uri]=id;
+  const NV="http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/";
+  const g=u=>byUri[u]||null;
+  CFG={
+    milestone:g(NV+"NV_C0028"), siteMilestone:g(NV+"NV_C0042"),
+    msNameTop:g(NV+"NV_C0040"), msName:g(NV+"NV_C0047"),
+    planning:g(NV+"NV_C0065"), actualGen:g(OBO+"NCIT_C16203"),
+    hasNameProp:g(NV+"NV_P0102"),
+    dateProp:g("http://www.w3.org/2006/time#inXSDDate"),
+    studyKey:(g(OBO+"NCIT_C15206")&&g(NV+"NV_D0091"))?{cls:g(OBO+"NCIT_C15206"),prop:g(NV+"NV_D0091")}:null,
+    siteKey:(g(OBO+"NCIT_C83100")&&g(NV+"NV_D0090"))?{cls:g(OBO+"NCIT_C83100"),prop:g(NV+"NV_D0090")}:null,
+    planningInd:null
+  };
+  // generic fallbacks for foreign ontologies
+  if(!CFG.dateProp) CFG.dateProp=Object.keys(ONT.dataProperties).find(id=>/^xsd:date/.test(ONT.dataProperties[id].range||""))||null;
+  if(!CFG.milestone) CFG.milestone=Object.keys(ONT.classes).find(id=>/milestone|event\b/i.test(ONT.classes[id].label))||null;
+  if(CFG.planning) CFG.planningInd=Object.keys(ONT.individuals).find(id=>(ONT.individuals[id].types||[]).includes(CFG.planning))||null;
+}
+function pickDataProp(re, classId){
+  const ids=Object.keys(ONT.dataProperties);
+  // prefer a property whose domain fits the class
+  return ids.find(id=>re.test(ONT.dataProperties[id].label)&&ONT.dataProperties[id].domain&&classId&&(ONT.dataProperties[id].domain===classId||ancestors(classId).includes(ONT.dataProperties[id].domain)))
+      || ids.find(id=>re.test(ONT.dataProperties[id].label))||null;
+}
+
+function setOntology(ont){
+  ONT=ont; resolveCFG(); VALCACHE.clear();
+  STATE.maps=[]; if($("cards")) $("cards").innerHTML="";
+  const n=o=>Object.keys(o).length;
+  $("ontInfo").textContent=`✓ ${ont.source_file}: ${n(ont.classes)} classes · ${n(ont.dataProperties)} data props · ${n(ont.objectProperties)} object props · ${n(ont.individuals)} individuals`;
+  console.log("ontology loaded:",ont.source_file,n(ont.classes),"classes; CFG:",JSON.stringify(Object.fromEntries(Object.entries(CFG).filter(([k,v])=>v))));
+  if(STATE.cols.length) $("propose").disabled=false;
+  if(SEM.pipe) embedOntology(); // re-embed entities for the new ontology (async, fire & forget)
+}
+function loadOntologyText(text,name){
+  const t=text.trimStart();
+  const triples = (t.startsWith("<?xml")||t.startsWith("<rdf:RDF")||t.startsWith("<RDF")||(/\.(rdf|owl|xml|rdfs)$/i.test(name)&&t.startsWith("<")))
+    ? parseRdfXml(text) : parseTurtle(text);
+  const ont=buildOnt(triples,name);
+  if(!Object.keys(ont.classes).length && !Object.keys(ont.dataProperties).length)
+    throw new Error("no OWL classes or properties found in "+name);
+  setOntology(ont);
+}
+$("ontInput").addEventListener("change",e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const r=new FileReader();
+  r.onload=()=>{ try{ loadOntologyText(r.result,f.name); }catch(err){ showFatal("Ontology parsing failed ("+f.name+"): "+err.message); } };
+  r.onerror=()=>showFatal("Could not read the ontology file.");
+  r.readAsText(f,"utf-8");
+});
+
+(async function boot(){
+  if(typeof N3==="undefined") showFatal("n3.min.js (Turtle parser) did not load from the CDN — .ttl parsing unavailable; RDF/XML (.owl/.rdf) still works.");
+  $("csvInfo").textContent="load an ontology and a CSV to start";
+  try{ // optional bundled demo ontology — delete sample_ontology.ttl from the repo to disable
+    const r=await fetch("sample_ontology.ttl");
+    if(!r.status||r.status<400){ const t=await r.text();
+      if(t.trim().startsWith("@prefix")){ loadOntologyText(t,"sample_ontology.ttl"); $("ontInfo").textContent+=" (bundled demo)"; } }
+  }catch(e){ /* no bundled demo present — fine */ }
 })();
