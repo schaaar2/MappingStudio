@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ontology Mapping Studio — Site Readiness</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <h1>🗺️ Ontology Mapping Studio</h1>
+  <div class="sub">CSV columns → OWL ontology (classes · data properties · restrictions) → YAML / R2RML</div>
+</header>
+
+<section id="controls" class="panel">
+  <div class="row">
+    <label class="filebtn">📂 Load CSV (stays in your browser)
+      <input type="file" id="fileInput" accept=".csv,.txt">
+    </label>
+    <button id="loadSample" class="ghost">Load bundled synthetic sample</button>
+    <span id="csvInfo" class="muted"></span>
+  </div>
+  <div class="row">
+    <button id="semBtn" class="ghost">🧠 Enable semantic matching (all-MiniLM-L6-v2)</button>
+    <span id="semStatus" class="muted">off — lexical + OWL only</span>
+  </div>
+  <div class="row">
+    <button id="propose" class="primary" disabled>⚙️ Propose mappings</button>
+    <button id="exportYaml" class="ghost" disabled>⬇ Export YAML</button>
+    <button id="exportR2rml" class="ghost" disabled>⬇ Export R2RML (.ttl)</button>
+    <button id="exportJson" class="ghost" disabled>⬇ Export JSON</button>
+    <button id="resetAll" class="ghost">Reset decisions</button>
+  </div>
+  <div id="summary" class="row muted"></div>
+  <div id="gaps" class="gaps"></div>
+  <p class="privacy">⚠️ Privacy: the CSV is parsed locally in your browser and is never uploaded. Do <b>not</b> commit real tracker data or exported mappings containing internal content to a <i>public</i> GitHub repository.</p>
+</section>
+
+<section id="cards" class="cards"></section>
+
+<section class="panel" id="exportPanel" style="display:none">
+  <h2 id="exportTitle"></h2>
+  <div class="row"><button id="copyExport" class="ghost">📋 Copy</button><button id="dlExport" class="primary">⬇ Download</button></div>
+  <pre id="exportPre"></pre>
+</section>
+
+<footer class="muted">Neuro-symbolic mapping pipeline: 🔤 lexical match on labels/synonyms · 🧪 value profiling (dates, booleans, identifiers) · 🕸 OWL validation (domain/range, restriction templates) · ✅ human confirmation. Ontology: site_readiness_demo.ttl (ClinOps-Core / NCIT / USDM / BFO / RO).</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
