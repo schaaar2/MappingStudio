@@ -31,7 +31,10 @@
     <span id="semStatus" class="muted">off — lexical + OWL only</span>
   </div>
   <div class="row">
-    <label class="muted">🔑 Default key fields&nbsp;<input id="defaultKeys" placeholder="e.g. Study, SiteID" title="Used for new proposals; override per mapping in its editor"></label>
+    <details class="ddmulti" id="dkDD" title="Key columns used for new proposals; override per mapping in its editor">
+      <summary>🔑 Default key fields: <span id="dkLabel">—</span></summary>
+      <div class="ddlist" id="dkList"><span class="muted">load a CSV first</span></div>
+    </details>
   </div>
   <div class="row">
     <button id="propose" class="primary" disabled>⚙️ Propose mappings</button>
