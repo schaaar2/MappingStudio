@@ -1,0 +1,49 @@
+{
+  "source_file": "site_readiness_demo.ttl",
+  "classes": {
+    "NCIT:C15206": {"label": "Clinical Study", "uri": "http://purl.obolibrary.org/obo/NCIT_C15206", "syns": ["Clinical Research", "Clinical Studies", "Study", "clinical study", "study", "trial", "clinical trial"], "def": "Research conducted with human subjects; includes clinical trials.", "parents": ["NCIT:C63536"]},
+    "NCIT:C80403": {"label": "Study Site", "uri": "http://purl.obolibrary.org/obo/NCIT_C80403", "syns": ["Investigator Site", "Investigative Site", "Site", "StudySite", "study site"], "def": "A facility in which study/protocol activities are conducted; logical site possibly hosted by a physical facility.", "parents": ["USDM:StudySite"], "restr": [{"p": "RO:0000056", "kind": "some", "filler": "NCIT:C15206"}, {"p": "RO:0001025", "kind": "some", "filler": "schema:Country"}, {"p": "NV:P0159", "kind": "some", "filler": "NV:P0155c"}, {"p": "NV:D0021", "kind": "some", "filler": "xsd:string"}]},
+    "NCIT:C83100": {"label": "Study Site Number", "uri": "http://purl.obolibrary.org/obo/NCIT_C83100", "syns": ["SITENO", "site number", "site id", "siteid"], "def": "The numerical characters used to identify the study site.", "parents": ["NCIT:C25337"], "restr": [{"p": "NV:P0208", "kind": "some", "filler": "NCIT:C80403"}, {"p": "NV:D0090", "kind": "some", "filler": "xsd:string"}]},
+    "NCIT:C25337": {"label": "Number", "uri": "http://purl.obolibrary.org/obo/NCIT_C25337", "syns": ["Numeric", "Numerical", "number"], "def": "A numeral or string of numerals.", "parents": []},
+    "NV:C0028": {"label": "Milestone", "uri": "http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0028", "syns": ["milestone"], "def": "Has exactly one Milestone Name, occurs in exactly one Clinical Study, has a date.", "parents": ["BFO:0000035"], "restr": [{"p": "NV:P0102", "kind": "exactly 1", "filler": "NV:C0040"}, {"p": "NV:P0158", "kind": "exactly 1", "filler": "NCIT:C15206"}, {"p": "time:inXSDDate", "kind": "some", "filler": "xsd:date"}]},
+    "NV:C0040": {"label": "Milestone Name", "uri": "http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0040", "syns": ["milestone name"], "def": "Controlled name and definition of a milestone.", "parents": ["NCIT:C113497"]},
+    "NV:C0042": {"label": "Site Milestone", "uri": "http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0042", "syns": ["site milestone"], "def": "A Milestone occurring at a Study Site (exactly one Site Milestone Name, occurs in exactly one Study Site).", "parents": ["NV:C0028"], "restr": [{"p": "NV:P0102", "kind": "exactly 1", "filler": "NV:C0047"}, {"p": "NV:P0158", "kind": "exactly 1", "filler": "NCIT:C80403"}]},
+    "NV:C0047": {"label": "Site Milestone Name", "uri": "http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0047", "syns": ["site milestone name"], "def": "Controlled name of a site-level milestone.", "parents": ["NV:C0040"]},
+    "NV:C0065": {"label": "Milestone Planning Activity", "uri": "http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0065", "syns": ["milestone planning", "planned"], "def": "Activity that generates planned milestone entries (prov:Activity).", "parents": ["prov:Activity"]},
+    "NCIT:C16203": {"label": "NCIT:C16203 (actual/recorded generator)", "uri": "http://purl.obolibrary.org/obo/NCIT_C16203", "unlabeled": true, "syns": [], "def": "Unlabeled in file; alternative generator class in Milestone's wasGeneratedBy union (used here for 'actual' values).", "parents": []},
+    "NCIT:C63536": {"label": "NCIT:C63536", "uri": "http://purl.obolibrary.org/obo/NCIT_C63536", "unlabeled": true, "syns": [], "def": "Unlabeled superclass of Clinical Study.", "parents": []},
+    "NCIT:C113497": {"label": "NCIT:C113497", "uri": "http://purl.obolibrary.org/obo/NCIT_C113497", "unlabeled": true, "syns": [], "def": "Unlabeled superclass of Milestone Name.", "parents": []},
+    "BFO:0000035": {"label": "BFO:0000035", "uri": "http://purl.obolibrary.org/obo/BFO_0000035", "unlabeled": true, "syns": [], "def": "BFO superclass of Milestone.", "parents": []},
+    "NV:P0155c": {"label": "NV:P0155 (facility class)", "uri": "http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0155", "unlabeled": true, "syns": ["facility", "clinical facility"], "def": "Range of 'hosted at' — physical facility hosting a Study Site.", "parents": []},
+    "schema:Country": {"label": "Country", "uri": "https://schema.org/Country", "syns": ["country", "nation"], "def": "A Study Site is located in some Country.", "parents": []},
+    "USDM:StudySite": {"label": "StudySite (CDISC USDM)", "uri": "https://w3id.org/cdisc/usdm/v4/StudySite", "syns": ["usdm study site"], "def": "CDISC USDM v4 StudySite; has attribute StudySite-name.", "parents": []},
+    "time:Instant": {"label": "Instant", "uri": "http://www.w3.org/2006/time#Instant", "syns": ["time instant", "date"], "def": "OWL-Time Instant.", "parents": []},
+    "prov:Activity": {"label": "Activity (PROV)", "uri": "http://www.w3.org/ns/prov#Activity", "syns": ["activity"], "def": "W3C PROV Activity.", "parents": []}
+  },
+  "dataProperties": {
+    "NV:D0021": {"label": "Long Name", "uri": "http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_D0021", "syns": ["long name", "full name", "name"], "def": "Human-readable long name.", "range": "xsd:string"},
+    "NV:D0090": {"label": "Identifier", "uri": "http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_D0090", "syns": ["identifier", "id", "code", "number"], "def": "Identifier.", "range": "xsd:string"},
+    "NV:D0091": {"label": "Unique Identifier", "uri": "http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_D0091", "syns": ["unique identifier", "unique id", "study code", "study number"], "def": "Unique identifier in the development domain (functional).", "range": "xsd:string", "functional": true},
+    "USDM:StudySite-name": {"label": "Study Site Name", "uri": "https://w3id.org/cdisc/usdm/v4/StudySite-name", "syns": ["StudySite-name", "site name", "study site name"], "def": "The literal identifier (distinctive designation) of the study site.", "domain": "USDM:StudySite", "range": "xsd:string"},
+    "time:inXSDDate": {"label": "in XSD date", "uri": "http://www.w3.org/2006/time#inXSDDate", "syns": ["date", "planned date", "actual date", "completion date"], "def": "Position of an instant, expressed using xsd:date.", "domain": "time:Instant", "range": "xsd:date"}
+  },
+  "objectProperties": {
+    "RO:0000056": {"label": "participates in", "uri": "http://purl.obolibrary.org/obo/RO_0000056", "inverse": "RO:0000057"},
+    "RO:0000057": {"label": "has participant", "uri": "http://purl.obolibrary.org/obo/RO_0000057", "inverse": "RO:0000056"},
+    "RO:0001025": {"label": "located in", "uri": "http://purl.obolibrary.org/obo/RO_0001025", "inverse": "RO:0001015", "transitive": true},
+    "RO:0001015": {"label": "location of", "uri": "http://purl.obolibrary.org/obo/RO_0001015", "inverse": "RO:0001025", "transitive": true},
+    "BFO:0000066": {"label": "occurs in", "uri": "http://purl.obolibrary.org/obo/BFO_0000066", "inverse": "BFO:0000067", "transitive": true},
+    "NV:P0102": {"label": "has milestone name and definition", "uri": "http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0102", "inverse": "NV:P0103"},
+    "NV:P0158": {"label": "milestone occurs in", "uri": "http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0158", "sub": "BFO:0000066"},
+    "NV:P0159": {"label": "hosted at", "uri": "http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0159", "inverse": "NV:P0160", "domain": "NCIT:C80403", "range": "NV:P0155c"},
+    "NV:P0160": {"label": "hosts", "uri": "http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0160", "inverse": "NV:P0159"},
+    "NV:P0207": {"label": "belongs to", "uri": "http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0207", "sub": "RO:0000056"},
+    "NV:P0208": {"label": "identifies", "uri": "http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0208"},
+    "prov:wasGeneratedBy": {"label": "was generated by", "uri": "http://www.w3.org/ns/prov#wasGeneratedBy"}
+  },
+  "individuals": {
+    "NV:C0044": {"label": "SIV", "uri": "http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0044", "longName": "Site Initiation Visit", "syns": ["SIV", "site initiation visit", "initiation visit"], "types": ["NV:C0047"]},
+    "NV:Test_I0071": {"label": "NCV latest planned milestone entry", "uri": "http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/Test_I0071", "syns": ["latest planned milestone", "planned"], "types": ["NV:C0065"]}
+  },
+  "milestoneKeywords": ["siv", "fpfv", "initiation visit", "activation", "qualification", "training", "calibration", "questionnaire", "shipment", "received", "submitted", "completed", "visit"]
+}
