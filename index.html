@@ -14,6 +14,12 @@
 
 <section id="controls" class="panel">
   <div class="row">
+    <label class="filebtn">🦉 Load ontology (.ttl / .rdf / .owl)
+      <input type="file" id="ontInput" accept=".ttl,.rdf,.owl,.nt,.xml,.rdfs">
+    </label>
+    <span id="ontInfo" class="muted">no ontology loaded yet</span>
+  </div>
+  <div class="row">
     <label class="filebtn">📂 Load CSV (stays in your browser)
       <input type="file" id="fileInput" accept=".csv,.txt">
     </label>
@@ -49,6 +55,7 @@
 
 <footer class="muted">Neuro-symbolic mapping pipeline: 🔤 lexical match on labels/synonyms · 🧪 value profiling (dates, booleans, identifiers) · 🕸 OWL validation (domain/range, restriction templates) · ✅ human confirmation. Ontology: site_readiness_demo.ttl (ClinOps-Core / NCIT / USDM / BFO / RO).</footer>
 
+<script src="https://cdn.jsdelivr.net/npm/n3@1.17.4/browser/n3.min.js"></script>
 <script src="app.js"></script>
 <script>
 /* Fail-loud guard: if app.js was not found/loaded (e.g. 404 on GitHub Pages), say so on the page. */
