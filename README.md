@@ -2,7 +2,7 @@
 
 A static, client-side web app that maps CSV columns to OWL ontology concepts (classes, data properties, restrictions) and exports the result as **YAML** (your `schema_version 0.1` format), **R2RML** (for Morph-KGC / Ontop), or **JSON**.
 
-Pipeline per column: 🔤 lexical match on labels/synonyms → 🧠 optional semantic match (all-MiniLM-L6-v2 embeddings, in-browser) → 🧪 value profiling (Excel serial dates, booleans, identifiers) → 🕸 OWL validation (domain/range, type checks, restriction templates) → ✅ your confirmation.
+Pipeline per column: 🔤 lexical match on labels/synonyms → 🧠 optional semantic match (all-MiniLM-L6-v2 embeddings, in-browser — applied to column names AND cell values, for key-value data models) → 🧪 value profiling (Excel serial dates, booleans, identifiers) → 🕸 OWL validation (domain/range, type checks, restriction templates) → ✅ your confirmation.
 
 ## Files
 
@@ -12,7 +12,6 @@ Pipeline per column: 🔤 lexical match on labels/synonyms → 🧠 optional sem
 | `styles.css` | styling |
 | `app.js` | parser, matcher, reasoner, exports |
 | `ontology.json` | ontology extracted from `site_readiness_demo.ttl` |
-| `mappings.seed.json` | your existing YAML mappings (pre-confirmed) |
 | `sample_data.csv` | synthetic demo data (safe to publish) |
 
 ## Deploy on GitHub Pages
@@ -40,10 +39,11 @@ The model runs **inside the browser** via transformers.js (ONNX). The page canno
 ## Using it
 
 1. Load your CSV via the file button (it is parsed locally and **never uploaded**).
-2. Optionally enable semantic matching.
-3. *Propose mappings* → review the cards: confidence, source badges, restriction chips, ontology-gap suggestions (e.g. a missing `FPFV` Site Milestone Name individual).
-4. Confirm/edit/ignore; decisions persist in the browser (localStorage).
-5. Export YAML / R2RML / JSON — download or copy, commit wherever you keep mappings.
+2. Optionally enable semantic matching (also matches cell values to ontology individuals — e.g. a `Milestone` column containing "siv compl." proposes the restriction *Site Milestone Name = SIV*).
+3. Set the default key fields (🔑 box, prefilled with a guess) — override per mapping in its editor.
+4. *Propose mappings* → review the cards: confidence, source badges, restriction chips, ontology-gap suggestions (e.g. a missing `FPFV` Site Milestone Name individual).
+5. Confirm/edit/ignore; decisions persist in the browser (localStorage).
+6. Export YAML / R2RML / JSON — download or copy, commit wherever you keep mappings.
 
 ## Next step: actually producing triples / querying
 
