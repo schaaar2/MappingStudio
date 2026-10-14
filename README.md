@@ -1,6 +1,6 @@
 # Ontology Mapping Studio
 
-A static, client-side web app that maps CSV columns to OWL ontology concepts (classes, data properties, restrictions) and exports the result as **YAML** (your `schema_version 0.1` format), **R2RML** (for Morph-KGC / Ontop), or **JSON**.
+A static, client-side web app that maps CSV columns to the concepts of **any OWL ontology you load** (.ttl / .rdf / .owl — Turtle via N3.js, RDF/XML via the browser's XML parser; classes, data properties, restrictions) and exports the result as **YAML** (your `schema_version 0.1` format), **R2RML** (for Morph-KGC / Ontop), or **JSON**.
 
 Pipeline per column: 🔤 lexical match on labels/synonyms → 🧠 optional semantic match (all-MiniLM-L6-v2 embeddings, in-browser — applied to column names AND cell values, for key-value data models) → 🧪 value profiling (Excel serial dates, booleans, identifiers) → 🕸 OWL validation (domain/range, type checks, restriction templates) → ✅ your confirmation.
 
@@ -11,7 +11,7 @@ Pipeline per column: 🔤 lexical match on labels/synonyms → 🧠 optional sem
 | `index.html` | the page |
 | `styles.css` | styling |
 | `app.js` | parser, matcher, reasoner, exports |
-| `ontology.json` | ontology extracted from `site_readiness_demo.ttl` |
+| `sample_ontology.ttl` | bundled demo ontology (auto-loaded if present; delete to disable) |
 | `sample_data.csv` | synthetic demo data (safe to publish) |
 
 ## Deploy on GitHub Pages
@@ -20,7 +20,7 @@ Pipeline per column: 🔤 lexical match on labels/synonyms → 🧠 optional sem
 2. Repo → Settings → Pages → Source: *Deploy from a branch* → branch `main`, folder `/ (root)`.
 3. Open `https://<user>.github.io/<repo>/`.
 
-Any static hosting (or a local `python -m http.server`) works too. Opening `index.html` directly from disk (`file://`) will not load the JSON files — use an HTTP server.
+`index.html` loads `n3.min.js` from cdn.jsdelivr.net (Turtle parsing); if your proxy blocks it, download that one file into the repo and change the script tag to `src="n3.min.js"`. Any static hosting (or a local `python -m http.server`) works too. Opening `index.html` directly from disk (`file://`) will not load the JSON files — use an HTTP server.
 
 ## Semantic matching with your all-MiniLM-L6-v2
 
@@ -38,12 +38,13 @@ The model runs **inside the browser** via transformers.js (ONNX). The page canno
 
 ## Using it
 
-1. Load your CSV via the file button (it is parsed locally and **never uploaded**).
-2. Optionally enable semantic matching (also matches cell values to ontology individuals — e.g. a `Milestone` column containing "siv compl." proposes the restriction *Site Milestone Name = SIV*).
-3. Set the default key fields (🔑 box, prefilled with a guess) — override per mapping in its editor.
-4. *Propose mappings* → review the cards: confidence, source badges, restriction chips, ontology-gap suggestions (e.g. a missing `FPFV` Site Milestone Name individual).
-5. Confirm/edit/ignore; decisions persist in the browser (localStorage).
-6. Export YAML / R2RML / JSON — download or copy, commit wherever you keep mappings.
+1. Load your ontology (🦉 button; .ttl/.rdf/.owl — parsed locally). The bundled `sample_ontology.ttl` auto-loads if present. Clinical-demo templates (milestone dates, planned/actual) activate only when the loaded ontology contains those concepts (matched by URI); any other ontology gets the generic pipeline.
+2. Load your CSV via the file button (it is parsed locally and **never uploaded**).
+3. Optionally enable semantic matching (also matches cell values to ontology individuals — e.g. a `Milestone` column containing "siv compl." proposes the restriction *Site Milestone Name = SIV*).
+4. Set the default key fields (🔑 box, prefilled with a guess) — override per mapping in its editor.
+5. *Propose mappings* → review the cards: confidence, source badges, restriction chips, ontology-gap suggestions (e.g. a missing `FPFV` Site Milestone Name individual).
+6. Confirm/edit/ignore; decisions persist in the browser (localStorage).
+7. Export YAML / R2RML / JSON — download or copy, commit wherever you keep mappings.
 
 ## Next step: actually producing triples / querying
 
