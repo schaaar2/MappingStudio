@@ -1,0 +1,990 @@
+@prefix : <http://www.semanticweb.org/schaaar2/ontologies/2026/9/SiteReadinessDemo/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://www.semanticweb.org/schaaar2/ontologies/2026/9/SiteReadinessDemo/> .
+
+<http://www.semanticweb.org/schaaar2/ontologies/2026/9/SiteReadinessDemo> rdf:type owl:Ontology .
+
+#################################################################
+#    Annotation properties
+#################################################################
+
+###  http://purl.obolibrary.org/obo/IAO_0000111
+<http://purl.obolibrary.org/obo/IAO_0000111> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.obolibrary.org/obo/IAO_0000112
+<http://purl.obolibrary.org/obo/IAO_0000112> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.obolibrary.org/obo/IAO_0000115
+<http://purl.obolibrary.org/obo/IAO_0000115> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.obolibrary.org/obo/IAO_0000116
+<http://purl.obolibrary.org/obo/IAO_0000116> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.obolibrary.org/obo/IAO_0000118
+<http://purl.obolibrary.org/obo/IAO_0000118> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.obolibrary.org/obo/NCIT_NHC0
+<http://purl.obolibrary.org/obo/NCIT_NHC0> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.obolibrary.org/obo/NCIT_P106
+<http://purl.obolibrary.org/obo/NCIT_P106> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.obolibrary.org/obo/NCIT_P108
+<http://purl.obolibrary.org/obo/NCIT_P108> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.obolibrary.org/obo/NCIT_P207
+<http://purl.obolibrary.org/obo/NCIT_P207> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.obolibrary.org/obo/NCIT_P322
+<http://purl.obolibrary.org/obo/NCIT_P322> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.obolibrary.org/obo/NCIT_P325
+<http://purl.obolibrary.org/obo/NCIT_P325> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.obolibrary.org/obo/NCIT_P366
+<http://purl.obolibrary.org/obo/NCIT_P366> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.obolibrary.org/obo/NCIT_P378
+<http://purl.obolibrary.org/obo/NCIT_P378> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.obolibrary.org/obo/NCIT_P383
+<http://purl.obolibrary.org/obo/NCIT_P383> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.obolibrary.org/obo/NCIT_P384
+<http://purl.obolibrary.org/obo/NCIT_P384> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.obolibrary.org/obo/NCIT_P385
+<http://purl.obolibrary.org/obo/NCIT_P385> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.obolibrary.org/obo/NCIT_P386
+<http://purl.obolibrary.org/obo/NCIT_P386> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.obolibrary.org/obo/RO_0001900
+<http://purl.obolibrary.org/obo/RO_0001900> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/elements/1.1/source
+<http://purl.org/dc/elements/1.1/source> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/source
+<http://purl.org/dc/terms/source> rdf:type owl:AnnotationProperty .
+
+
+###  http://www.geneontology.org/formats/oboInOwl#hasExactSynonym
+<http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> rdf:type owl:AnnotationProperty .
+
+
+###  http://www.geneontology.org/formats/oboInOwl#inSubset
+<http://www.geneontology.org/formats/oboInOwl#inSubset> rdf:type owl:AnnotationProperty .
+
+
+###  http://www.w3.org/2004/02/skos/core#definition
+<http://www.w3.org/2004/02/skos/core#definition> rdf:type owl:AnnotationProperty .
+
+
+###  http://www.w3.org/2004/02/skos/core#exactMatch
+<http://www.w3.org/2004/02/skos/core#exactMatch> rdf:type owl:AnnotationProperty .
+
+
+###  http://www.w3.org/2004/02/skos/core#prefLabel
+<http://www.w3.org/2004/02/skos/core#prefLabel> rdf:type owl:AnnotationProperty .
+
+
+###  https://w3id.org/cdisc/usdm/v4/modelName
+<https://w3id.org/cdisc/usdm/v4/modelName> rdf:type owl:AnnotationProperty .
+
+
+###  https://w3id.org/cdisc/usdm/v4/modelRepresentation
+<https://w3id.org/cdisc/usdm/v4/modelRepresentation> rdf:type owl:AnnotationProperty .
+
+
+###  https://w3id.org/cdisc/usdm/v4/relationshipType
+<https://w3id.org/cdisc/usdm/v4/relationshipType> rdf:type owl:AnnotationProperty .
+
+
+#################################################################
+#    Datatypes
+#################################################################
+
+###  http://www.w3.org/2001/XMLSchema#date
+xsd:date rdf:type rdfs:Datatype .
+
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://purl.obolibrary.org/obo/BFO_0000066
+<http://purl.obolibrary.org/obo/BFO_0000066> rdf:type owl:ObjectProperty ;
+                                             owl:inverseOf <http://purl.obolibrary.org/obo/BFO_0000067> ;
+                                             rdf:type owl:TransitiveProperty ;
+                                             <http://purl.obolibrary.org/obo/IAO_0000111> "occurs in"@en ;
+                                             <http://purl.obolibrary.org/obo/IAO_0000115> "b occurs_in c =def b is a process and c is a material entity or immaterial entity& there exists a spatiotemporal region r and b occupies_spatiotemporal_region r.& forall(t) if b exists_at t then c exists_at t & there exist spatial regions s and s’ where & b spatially_projects_onto s at t& c is occupies_spatial_region s’ at t& s is a proper_continuant_part_of s’ at t"@en ;
+                                             <http://purl.obolibrary.org/obo/IAO_0000118> "occurs_in"@en ,
+                                                                                          "unfolds in"@en ,
+                                                                                          "unfolds_in"@en ;
+                                             <http://www.geneontology.org/formats/oboInOwl#inSubset> <http://purl.obolibrary.org/obo/valid_for_go_annotation_extension> ,
+                                                                                                     <http://purl.obolibrary.org/obo/valid_for_go_ontology> ,
+                                                                                                     <http://purl.obolibrary.org/obo/valid_for_gocam> ;
+                                             rdfs:comment "Paraphrase of definition: a relation between a process and an independent continuant, in which the process takes place entirely within the independent continuant" ;
+                                             rdfs:isDefinedBy <http://purl.obolibrary.org/obo/bfo.owl> ;
+                                             rdfs:label "occurs in"@en ;
+                                             rdfs:seeAlso "https://wiki.geneontology.org/Occurs_in"^^xsd:anyURI .
+
+
+###  http://purl.obolibrary.org/obo/BFO_0000067
+<http://purl.obolibrary.org/obo/BFO_0000067> rdf:type owl:ObjectProperty .
+
+
+###  http://purl.obolibrary.org/obo/RO_0000056
+<http://purl.obolibrary.org/obo/RO_0000056> rdf:type owl:ObjectProperty ;
+                                            owl:inverseOf <http://purl.obolibrary.org/obo/RO_0000057> ;
+                                            <http://purl.obolibrary.org/obo/IAO_0000111> "participates in"@en ;
+                                            <http://purl.obolibrary.org/obo/IAO_0000112> "A Study is logically conducted at a Study Site, and the study activities associated with that Stud ySite are physically conducted at one or more ClinicalFacility instances."@en ,
+                                                                                         "study country participates in clinical study (source: NCV job aid)"@en ,
+                                                                                         "this blood clot participates in this blood coagulation"@en ,
+                                                                                         "this input material (or this output material) participates in this process"@en ,
+                                                                                         "this investigator participates in this investigation"@en ;
+                                            <http://purl.obolibrary.org/obo/IAO_0000115> "a relation between a continuant and a process, in which the continuant is somehow involved in the process"@en ;
+                                            <http://purl.obolibrary.org/obo/IAO_0000118> "participates_in"@en ;
+                                            rdfs:label "participates in"@en .
+
+
+###  http://purl.obolibrary.org/obo/RO_0000057
+<http://purl.obolibrary.org/obo/RO_0000057> rdf:type owl:ObjectProperty ;
+                                            <http://purl.obolibrary.org/obo/IAO_0000111> "has participant"@en ;
+                                            <http://purl.obolibrary.org/obo/IAO_0000112> "this blood coagulation has participant this blood clot"@en ,
+                                                                                         "this investigation has participant this investigator"@en ,
+                                                                                         "this process has participant this input material (or this output material)"@en ;
+                                            <http://purl.obolibrary.org/obo/IAO_0000115> "a relation between a process and a continuant, in which the continuant is somehow involved in the process"@en ;
+                                            <http://purl.obolibrary.org/obo/IAO_0000116> "Has_participant is a primitive instance-level relation between a process, a continuant, and a time at which the continuant participates in some way in the process. The relation obtains, for example, when this particular process of oxygen exchange across this particular alveolar membrane has_participant this particular sample of hemoglobin at this particular time."@en ;
+                                            <http://purl.obolibrary.org/obo/IAO_0000118> "has_participant"@en ;
+                                            <http://purl.org/dc/terms/source> "http://www.obofoundry.org/ro/#OBO_REL:has_participant" ;
+                                            rdfs:label "has participant"@en .
+
+
+###  http://purl.obolibrary.org/obo/RO_0001015
+<http://purl.obolibrary.org/obo/RO_0001015> rdf:type owl:ObjectProperty ;
+                                            owl:inverseOf <http://purl.obolibrary.org/obo/RO_0001025> ;
+                                            rdf:type owl:TransitiveProperty ;
+                                            <http://purl.obolibrary.org/obo/IAO_0000111> "is location of"@en ;
+                                            <http://purl.obolibrary.org/obo/IAO_0000112> "my head is the location of my brain"@en ,
+                                                                                         "this cage is the location of this rat"@en ;
+                                            <http://purl.obolibrary.org/obo/IAO_0000115> "a relation between two independent continuants, the location and the target, in which the target is entirely within the location"@en ;
+                                            <http://purl.obolibrary.org/obo/IAO_0000116> "Most location relations will only hold at certain times, but this is difficult to specify in OWL. See http://purl.obolibrary.org/obo/ro/docs/temporal-semantics/"@en ;
+                                            <http://purl.obolibrary.org/obo/IAO_0000118> "location_of"@en ;
+                                            <http://purl.obolibrary.org/obo/RO_0001900> <http://purl.obolibrary.org/obo/RO_0001901> ;
+                                            rdfs:label "location of"@en .
+
+
+###  http://purl.obolibrary.org/obo/RO_0001025
+<http://purl.obolibrary.org/obo/RO_0001025> rdf:type owl:ObjectProperty ,
+                                                     owl:TransitiveProperty ;
+                                            rdfs:domain <http://purl.obolibrary.org/obo/BFO_0000004> ,
+                                                        [ owl:intersectionOf ( <http://purl.obolibrary.org/obo/BFO_0000004>
+                                                                               [ rdf:type owl:Class ;
+                                                                                 owl:complementOf <http://purl.obolibrary.org/obo/BFO_0000006>
+                                                                               ]
+                                                                             ) ;
+                                                          rdf:type owl:Class
+                                                        ] ;
+                                            rdfs:range <http://purl.obolibrary.org/obo/BFO_0000004> ,
+                                                       [ owl:intersectionOf ( <http://purl.obolibrary.org/obo/BFO_0000004>
+                                                                              [ rdf:type owl:Class ;
+                                                                                owl:complementOf <http://purl.obolibrary.org/obo/BFO_0000006>
+                                                                              ]
+                                                                            ) ;
+                                                         rdf:type owl:Class
+                                                       ] ;
+                                            <http://purl.obolibrary.org/obo/IAO_0000111> "located in"@en ;
+                                            <http://purl.obolibrary.org/obo/IAO_0000112> "my brain is located in my head"@en ,
+                                                                                         "this rat is located in this cage"@en ;
+                                            <http://purl.obolibrary.org/obo/IAO_0000115> "a relation between two independent continuants, the target and the location, in which the target is entirely within the location"@en ;
+                                            <http://purl.obolibrary.org/obo/IAO_0000116> "Location as a relation between instances: The primitive instance-level relation c located_in r at t reflects the fact that each continuant is at any given time associated with exactly one spatial region, namely its exact location. Following we can use this relation to define a further instance-level location relation - not between a continuant and the region which it exactly occupies, but rather between one continuant and another. c is located in c1, in this sense, whenever the spatial region occupied by c is part_of the spatial region occupied by c1.    Note that this relation comprehends both the relation of exact location between one continuant and another which obtains when r and r1 are identical (for example, when a portion of fluid exactly fills a cavity), as well as those sorts of inexact location relations which obtain, for example, between brain and head or between ovum and uterus"@en ,
+                                                                                         "Most location relations will only hold at certain times, but this is difficult to specify in OWL. See http://purl.obolibrary.org/obo/ro/docs/temporal-semantics/"@en ;
+                                            <http://purl.obolibrary.org/obo/IAO_0000118> "located_in"@en ;
+                                            <http://purl.obolibrary.org/obo/RO_0001900> <http://purl.obolibrary.org/obo/RO_0001901> ;
+                                            <http://purl.org/dc/elements/1.1/source> "http://www.obofoundry.org/ro/#OBO_REL:located_in" ;
+                                            <http://purl.org/dc/terms/source> "http://www.obofoundry.org/ro/#OBO_REL:located_in" ;
+                                            <http://www.geneontology.org/formats/oboInOwl#inSubset> <http://purl.obolibrary.org/obo/valid_for_go_gp2term> ;
+                                            rdfs:label "located in"@en ;
+                                            rdfs:seeAlso "https://wiki.geneontology.org/Located_in"^^xsd:anyURI .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/RO_0001025> ;
+   owl:annotatedProperty rdfs:domain ;
+   owl:annotatedTarget <http://purl.obolibrary.org/obo/BFO_0000004> ;
+   <http://purl.obolibrary.org/obo/IAO_0000116> "This is redundant with the more specific 'independent and not spatial region' constraint. We leave in the redundant axiom for use with reasoners that do not use negation."
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/RO_0001025> ;
+   owl:annotatedProperty rdfs:range ;
+   owl:annotatedTarget <http://purl.obolibrary.org/obo/BFO_0000004> ;
+   <http://purl.obolibrary.org/obo/IAO_0000116> "This is redundant with the more specific 'independent and not spatial region' constraint. We leave in the redundant axiom for use with reasoners that do not use negation."
+ ] .
+
+
+###  http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0102
+<http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0102> rdf:type owl:ObjectProperty ;
+                                                                              owl:inverseOf <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0103> ;
+                                                                              rdfs:label "has milestone name and definition"@en .
+
+
+###  http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0103
+<http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0103> rdf:type owl:ObjectProperty ;
+                                                                              rdfs:domain <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0040> ;
+                                                                              rdfs:range <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0028> ;
+                                                                              rdfs:label "defines and identifies milestone"@en .
+
+
+###  http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0153
+<http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0153> rdf:type owl:ObjectProperty ;
+                                                                              rdfs:subPropertyOf <https://schema.org/provider> ;
+                                                                              rdfs:domain <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0152> ;
+                                                                              rdfs:range <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0093> ;
+                                                                              rdfs:label "is clinical service provider"@en .
+
+
+###  http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0158
+<http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0158> rdf:type owl:ObjectProperty ;
+                                                                              rdfs:subPropertyOf <http://purl.obolibrary.org/obo/BFO_0000066> ;
+                                                                              rdfs:label "milestone occurs in"@en .
+
+
+###  http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0159
+<http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0159> rdf:type owl:ObjectProperty ;
+                                                                              rdfs:subPropertyOf owl:topObjectProperty ;
+                                                                              owl:inverseOf <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0160> ;
+                                                                              rdfs:domain <http://purl.obolibrary.org/obo/NCIT_C80403> ;
+                                                                              rdfs:range <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0155> ;
+                                                                              rdfs:label "hosted at"@en .
+
+
+###  http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0160
+<http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0160> rdf:type owl:ObjectProperty ;
+                                                                              rdfs:label "hosts"@en .
+
+
+###  http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0207
+<http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0207> rdf:type owl:ObjectProperty ;
+                                                                              rdfs:subPropertyOf <http://purl.obolibrary.org/obo/RO_0000056> ;
+                                                                              rdfs:label "belongs to"@en .
+
+
+###  http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0208
+<http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0208> rdf:type owl:ObjectProperty ;
+                                                                              rdfs:label "identifies"@en .
+
+
+###  http://www.w3.org/ns/prov#wasGeneratedBy
+<http://www.w3.org/ns/prov#wasGeneratedBy> rdf:type owl:ObjectProperty .
+
+
+###  https://schema.org/provider
+<https://schema.org/provider> rdf:type owl:ObjectProperty .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  http://purl.obolibrary.org/obo/NCIT_C42614
+<http://purl.obolibrary.org/obo/NCIT_C42614> rdf:type owl:DatatypeProperty .
+
+
+###  http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_D0021
+<http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_D0021> rdf:type owl:DatatypeProperty ;
+                                                                              rdfs:subPropertyOf <http://purl.obolibrary.org/obo/NCIT_C42614> ;
+                                                                              rdfs:label "Long Name"@en .
+
+
+###  http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_D0090
+<http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_D0090> rdf:type owl:DatatypeProperty ;
+                                                                              rdfs:label "Identifier"@en .
+
+
+###  http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_D0091
+<http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_D0091> rdf:type owl:DatatypeProperty ;
+                                                                              rdfs:subPropertyOf <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_D0090> ;
+                                                                              rdf:type owl:FunctionalProperty ;
+                                                                              rdfs:comment "Unique Identifier in the development domain" ;
+                                                                              rdfs:label "Unique Identifier"@en .
+
+
+###  http://www.w3.org/2006/time#inXSDDate
+<http://www.w3.org/2006/time#inXSDDate> rdf:type owl:DatatypeProperty ;
+                                        rdfs:domain <http://www.w3.org/2006/time#Instant> ;
+                                        rdfs:range xsd:date ;
+                                        rdfs:comment "Posición de un instante, expresado utilizando xsd:date."@es ,
+                                                     "Position of an instant, expressed using xsd:date"@en ;
+                                        rdfs:label "en fecha XSD"@es ,
+                                                   "in XSD date"@en ;
+                                        <http://www.w3.org/2004/02/skos/core#definition> "Posición de un instante, expresado utilizando xsd:date."@es ,
+                                                                                         "Position of an instant, expressed using xsd:date"@en .
+
+
+###  https://w3id.org/cdisc/usdm/v4/StudySite-name
+<https://w3id.org/cdisc/usdm/v4/StudySite-name> rdf:type owl:DatatypeProperty ;
+                                                rdfs:domain <https://w3id.org/cdisc/usdm/v4/StudySite> ;
+                                                rdfs:range xsd:string ;
+                                                rdfs:label "StudySite-name" ;
+                                                <http://www.w3.org/2004/02/skos/core#definition> "The literal identifier (i.e., distinctive designation) of the study site." ;
+                                                <http://www.w3.org/2004/02/skos/core#exactMatch> <http://ncicb.nci.nih.gov/xml/owl/EVS/Thesaurus.owl#C207566> ,
+                                                                                                 <http://purl.obolibrary.org/obo/NCIT_C207566> ;
+                                                <http://www.w3.org/2004/02/skos/core#prefLabel> "Study Site Name" ;
+                                                <https://w3id.org/cdisc/usdm/v4/modelName> "name" ;
+                                                <https://w3id.org/cdisc/usdm/v4/modelRepresentation> "Attribute" ;
+                                                <https://w3id.org/cdisc/usdm/v4/relationshipType> "Value" .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://purl.obolibrary.org/obo/BFO_0000004
+<http://purl.obolibrary.org/obo/BFO_0000004> rdf:type owl:Class .
+
+
+###  http://purl.obolibrary.org/obo/BFO_0000006
+<http://purl.obolibrary.org/obo/BFO_0000006> rdf:type owl:Class .
+
+
+###  http://purl.obolibrary.org/obo/BFO_0000035
+<http://purl.obolibrary.org/obo/BFO_0000035> rdf:type owl:Class .
+
+
+###  http://purl.obolibrary.org/obo/NCIT_C113497
+<http://purl.obolibrary.org/obo/NCIT_C113497> rdf:type owl:Class .
+
+
+###  http://purl.obolibrary.org/obo/NCIT_C15206
+<http://purl.obolibrary.org/obo/NCIT_C15206> rdf:type owl:Class ;
+                                             rdfs:subClassOf <http://purl.obolibrary.org/obo/NCIT_C63536> ,
+                                                             _:genid11 ;
+                                             <http://purl.obolibrary.org/obo/IAO_0000115> "Research conducted with human subjects or on material of human origin in which an investigator directly interacts with human subjects; includes development of new technologies, study of mechanisms of human diseases, therapy, clinical trials, epidemiologic, behavior, and health services research." ;
+                                             <http://purl.obolibrary.org/obo/NCIT_NHC0> "C15206" ;
+                                             <http://purl.obolibrary.org/obo/NCIT_P106> "Research Activity" ;
+                                             <http://purl.obolibrary.org/obo/NCIT_P108> "Clinical Study" ;
+                                             <http://purl.obolibrary.org/obo/NCIT_P207> "C0008972" ;
+                                             <http://purl.obolibrary.org/obo/NCIT_P322> "CDISC" ,
+                                                                                        "CDISC-GLOSS" ,
+                                                                                        "FDA" ,
+                                                                                        "ICDC" ,
+                                                                                        "SeroNet" ;
+                                             <http://purl.obolibrary.org/obo/NCIT_P325> "A clinical study involves research using human volunteers (also called participants) that is intended to add to medical knowledge. There are two main types of clinical studies: clinical trials (also called interventional studies) and observational studies. (CDISC Glossary)" ,
+                                                                                        "A clinical study involves research using human volunteers (also called participants) that is intended to add to medical knowledge. There are two main types of clinical studies: clinical trials (also called interventional studies) and observational studies. [ClinicalTrials.gov] See also clinical trial." ;
+                                             <http://purl.obolibrary.org/obo/NCIT_P366> "Clinical_Study" ;
+                                             <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> "CLINICAL STUDY" ,
+                                                                                                            "Clinical Research" ,
+                                                                                                            "Clinical Studies" ,
+                                                                                                            "Clinical Study" ,
+                                                                                                            "Study" ,
+                                                                                                            "clinical study" ,
+                                                                                                            "study" ;
+                                             <http://www.geneontology.org/formats/oboInOwl#inSubset> <http://purl.obolibrary.org/obo/NCIT_C132298> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C132310> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C165451> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C175518> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C179027> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C188693> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C188698> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C189083> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C54447> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C54587> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C61410> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C67497> ;
+                                             rdfs:label "Clinical Study" .
+
+_:genid11 rdf:type owl:Restriction ;
+           owl:onProperty <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_D0091> ;
+           owl:someValuesFrom xsd:string .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C15206> ;
+   owl:annotatedProperty rdfs:subClassOf ;
+   owl:annotatedTarget _:genid11 ;
+   rdfs:label "Study Code Alias"@en
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C15206> ;
+   owl:annotatedProperty <http://purl.obolibrary.org/obo/IAO_0000115> ;
+   owl:annotatedTarget "Research conducted with human subjects or on material of human origin in which an investigator directly interacts with human subjects; includes development of new technologies, study of mechanisms of human diseases, therapy, clinical trials, epidemiologic, behavior, and health services research." ;
+   <http://purl.obolibrary.org/obo/NCIT_P378> "NCI"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C15206> ;
+   owl:annotatedProperty <http://purl.obolibrary.org/obo/NCIT_P325> ;
+   owl:annotatedTarget "A clinical study involves research using human volunteers (also called participants) that is intended to add to medical knowledge. There are two main types of clinical studies: clinical trials (also called interventional studies) and observational studies. (CDISC Glossary)" ;
+   <http://purl.obolibrary.org/obo/NCIT_P378> "CDISC"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C15206> ;
+   owl:annotatedProperty <http://purl.obolibrary.org/obo/NCIT_P325> ;
+   owl:annotatedTarget "A clinical study involves research using human volunteers (also called participants) that is intended to add to medical knowledge. There are two main types of clinical studies: clinical trials (also called interventional studies) and observational studies. [ClinicalTrials.gov] See also clinical trial." ;
+   <http://purl.obolibrary.org/obo/NCIT_P378> "CDISC-GLOSS"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C15206> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "CLINICAL STUDY" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "PT" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "FDA" ;
+   <http://purl.obolibrary.org/obo/NCIT_P386> "ICSR"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C15206> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "Clinical Research" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "PT" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "SeroNet"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C15206> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "Clinical Research" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "SY" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "NCI"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C15206> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "Clinical Studies" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "SY" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "NCI"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C15206> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "Clinical Study" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "PT" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "CDISC" ;
+   <http://purl.obolibrary.org/obo/NCIT_P385> "DDF-DDF Entities"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C15206> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "Clinical Study" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "PT" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "CDISC" ;
+   <http://purl.obolibrary.org/obo/NCIT_P385> "PROT-Prot Entities"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C15206> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "Clinical Study" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "PT" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "NCI"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C15206> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "Clinical Study" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "SY" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "caDSR"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C15206> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "Study" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "SY" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "NCI"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C15206> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "clinical study" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "PT" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "CDISC-GLOSS"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C15206> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "clinical study" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "PT" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "NCI-GLOSS" ;
+   <http://purl.obolibrary.org/obo/NCIT_P385> "CDR0000044195"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C15206> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "study" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "PT" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "ICDC" ;
+   <http://purl.obolibrary.org/obo/NCIT_P386> "ICDC"
+ ] .
+
+
+###  http://purl.obolibrary.org/obo/NCIT_C16203
+<http://purl.obolibrary.org/obo/NCIT_C16203> rdf:type owl:Class .
+
+
+###  http://purl.obolibrary.org/obo/NCIT_C25337
+<http://purl.obolibrary.org/obo/NCIT_C25337> rdf:type owl:Class ;
+                                             <http://purl.obolibrary.org/obo/IAO_0000115> "A numeral or string of numerals expressing value, quantity, or identification." ;
+                                             <http://purl.obolibrary.org/obo/NCIT_NHC0> "C25337" ;
+                                             <http://purl.obolibrary.org/obo/NCIT_P106> "Quantitative Concept" ;
+                                             <http://purl.obolibrary.org/obo/NCIT_P108> "Number" ;
+                                             <http://purl.obolibrary.org/obo/NCIT_P207> "C0237753" ;
+                                             <http://purl.obolibrary.org/obo/NCIT_P322> "DIPG/DMG" ,
+                                                                                        "PCDC" ;
+                                             <http://purl.obolibrary.org/obo/NCIT_P366> "Number" ;
+                                             <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> "Number" ,
+                                                                                                            "Numeric" ,
+                                                                                                            "Numerical" ,
+                                                                                                            "number" ,
+                                                                                                            "{Number}" ;
+                                             <http://www.geneontology.org/formats/oboInOwl#inSubset> <http://purl.obolibrary.org/obo/NCIT_C168547> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C174036> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C174236> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C177382> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C178114> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C179477> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C183087> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C186340> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C19752> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C91235> ;
+                                             rdfs:label "Number" .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C25337> ;
+   owl:annotatedProperty <http://purl.obolibrary.org/obo/IAO_0000115> ;
+   owl:annotatedTarget "A numeral or string of numerals expressing value, quantity, or identification." ;
+   <http://purl.obolibrary.org/obo/NCIT_P378> "NCI"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C25337> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "Number" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "PT" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "DIPG/DMG"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C25337> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "Number" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "PT" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "NCI"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C25337> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "Number" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "SY" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "caDSR"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C25337> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "Numeric" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "AD" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "NCI"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C25337> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "Numerical" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "AD" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "NCI"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C25337> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "number" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "PT" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "PCDC"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C25337> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "{Number}" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "SY" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "NCI"
+ ] .
+
+
+###  http://purl.obolibrary.org/obo/NCIT_C63536
+<http://purl.obolibrary.org/obo/NCIT_C63536> rdf:type owl:Class .
+
+
+###  http://purl.obolibrary.org/obo/NCIT_C80403
+<http://purl.obolibrary.org/obo/NCIT_C80403> rdf:type owl:Class ;
+                                             rdfs:subClassOf <https://w3id.org/cdisc/usdm/v4/StudySite> ,
+                                                             [ rdf:type owl:Restriction ;
+                                                               owl:onProperty <http://purl.obolibrary.org/obo/RO_0000056> ;
+                                                               owl:someValuesFrom <http://purl.obolibrary.org/obo/NCIT_C15206>
+                                                             ] ,
+                                                             [ rdf:type owl:Restriction ;
+                                                               owl:onProperty <http://purl.obolibrary.org/obo/RO_0001025> ;
+                                                               owl:someValuesFrom <https://schema.org/Country>
+                                                             ] ,
+                                                             [ rdf:type owl:Restriction ;
+                                                               owl:onProperty <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0159> ;
+                                                               owl:someValuesFrom <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0155>
+                                                             ] ,
+                                                             [ rdf:type owl:Restriction ;
+                                                               owl:onProperty <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_D0021> ;
+                                                               owl:someValuesFrom xsd:string
+                                                             ] ;
+                                             <http://purl.obolibrary.org/obo/IAO_0000115> "A facility in which study/protocol activities are conducted." ;
+                                             <http://purl.obolibrary.org/obo/NCIT_NHC0> "C80403" ;
+                                             <http://purl.obolibrary.org/obo/NCIT_P106> "Spatial Concept" ;
+                                             <http://purl.obolibrary.org/obo/NCIT_P108> "Study Site" ;
+                                             <http://purl.obolibrary.org/obo/NCIT_P207> "C2825164" ;
+                                             <http://purl.obolibrary.org/obo/NCIT_P322> "BRIDG" ,
+                                                                                        "CDISC" ,
+                                                                                        "MRCT-Ctr" ;
+                                             <http://purl.obolibrary.org/obo/NCIT_P325> "A facility in which study activities are conducted.   EXAMPLE(S): The site where the study subject encounter occurs, or the site of the Investigator.  OTHER NAME(S):  NOTE(S):" ,
+                                                                                        "A facility in which study activities are conducted. EXAMPLE(S): The site where the study subject encounter occurs, or the site of the Investigator." ,
+                                                                                        "An approved location where research study activities take place. (https://mrctcenter.org/glossaryterm/study-site/)" ,
+                                                                                        "The location at which a study investigator conducts study activities." ;
+                                             <http://purl.obolibrary.org/obo/NCIT_P366> "Study_Site" ;
+                                             <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> "INVESTIGATOR SITE" ,
+                                                                                                            "Investigative Site" ,
+                                                                                                            "Investigator Site" ,
+                                                                                                            "Site" ,
+                                                                                                            "Study Site" ,
+                                                                                                            "StudySite" ,
+                                                                                                            "study site" ;
+                                             <http://www.geneontology.org/formats/oboInOwl#inSubset> <http://purl.obolibrary.org/obo/NCIT_C159501> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C159503> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C188693> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C61410> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C66830> ;
+                                             rdfs:comment "A Study Site is a logical study-designated site at which study activities are planned or conducted, and which may be physically hosted by a Facility that provides space and equipment."@en ;
+                                             rdfs:label "Study Site" .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C80403> ;
+   owl:annotatedProperty <http://purl.obolibrary.org/obo/IAO_0000115> ;
+   owl:annotatedTarget "A facility in which study/protocol activities are conducted." ;
+   <http://purl.obolibrary.org/obo/NCIT_P378> "NCI"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C80403> ;
+   owl:annotatedProperty <http://purl.obolibrary.org/obo/NCIT_P325> ;
+   owl:annotatedTarget "A facility in which study activities are conducted.   EXAMPLE(S): The site where the study subject encounter occurs, or the site of the Investigator.  OTHER NAME(S):  NOTE(S):" ;
+   <http://purl.obolibrary.org/obo/NCIT_P378> "BRIDG 5.3"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C80403> ;
+   owl:annotatedProperty <http://purl.obolibrary.org/obo/NCIT_P325> ;
+   owl:annotatedTarget "A facility in which study activities are conducted. EXAMPLE(S): The site where the study subject encounter occurs, or the site of the Investigator." ;
+   <http://purl.obolibrary.org/obo/NCIT_P378> "BRIDG 3.0.3"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C80403> ;
+   owl:annotatedProperty <http://purl.obolibrary.org/obo/NCIT_P325> ;
+   owl:annotatedTarget "An approved location where research study activities take place. (https://mrctcenter.org/glossaryterm/study-site/)" ;
+   <http://purl.obolibrary.org/obo/NCIT_P378> "MRCT-Ctr"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C80403> ;
+   owl:annotatedProperty <http://purl.obolibrary.org/obo/NCIT_P325> ;
+   owl:annotatedTarget "The location at which a study investigator conducts study activities." ;
+   <http://purl.obolibrary.org/obo/NCIT_P378> "CDISC"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C80403> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "INVESTIGATOR SITE" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "PT" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "CDISC" ;
+   <http://purl.obolibrary.org/obo/NCIT_P385> "SDTM-ACCPARTY"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C80403> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "Investigative Site" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "SY" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "NCI"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C80403> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "Investigator Site" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "SY" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "NCI"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C80403> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "Site" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "SY" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "NCI"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C80403> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "Study Site" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "PT" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "CDISC" ;
+   <http://purl.obolibrary.org/obo/NCIT_P385> "DDF-DDF Entities"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C80403> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "Study Site" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "PT" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "CDISC" ;
+   <http://purl.obolibrary.org/obo/NCIT_P385> "DDF-Study Role Code Terminology"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C80403> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "Study Site" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "PT" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "NCI"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C80403> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "Study Site" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "SY" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "caDSR"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C80403> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "StudySite" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "PT" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "BRIDG 3.0.3"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C80403> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "StudySite" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "PT" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "BRIDG 5.3"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C80403> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "study site" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "PT" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "MRCT-Ctr"
+ ] .
+
+
+###  http://purl.obolibrary.org/obo/NCIT_C83100
+<http://purl.obolibrary.org/obo/NCIT_C83100> rdf:type owl:Class ;
+                                             rdfs:subClassOf <http://purl.obolibrary.org/obo/NCIT_C25337> ,
+                                                             [ rdf:type owl:Restriction ;
+                                                               owl:onProperty <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0208> ;
+                                                               owl:someValuesFrom <http://purl.obolibrary.org/obo/NCIT_C80403>
+                                                             ] ,
+                                                             [ rdf:type owl:Restriction ;
+                                                               owl:onProperty <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_D0090> ;
+                                                               owl:someValuesFrom xsd:string
+                                                             ] ;
+                                             <http://purl.obolibrary.org/obo/IAO_0000115> "The numerical characters used to identify, name, or characterize the study site." ;
+                                             <http://purl.obolibrary.org/obo/NCIT_NHC0> "C83100" ;
+                                             <http://purl.obolibrary.org/obo/NCIT_P106> "Quantitative Concept" ;
+                                             <http://purl.obolibrary.org/obo/NCIT_P108> "Study Site Number" ;
+                                             <http://purl.obolibrary.org/obo/NCIT_P207> "C2826711" ;
+                                             <http://purl.obolibrary.org/obo/NCIT_P366> "Study_Site_Number" ;
+                                             <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> "SITENO" ,
+                                                                                                            "Study Site Number" ;
+                                             <http://www.geneontology.org/formats/oboInOwl#inSubset> <http://purl.obolibrary.org/obo/NCIT_C83187> ,
+                                                                                                     <http://purl.obolibrary.org/obo/NCIT_C83188> ;
+                                             rdfs:label "Study Site Number" .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C83100> ;
+   owl:annotatedProperty <http://purl.obolibrary.org/obo/IAO_0000115> ;
+   owl:annotatedTarget "The numerical characters used to identify, name, or characterize the study site." ;
+   <http://purl.obolibrary.org/obo/NCIT_P378> "NCI"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C83100> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "SITENO" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "PT" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "CDISC"
+ ] .
+
+[ rdf:type owl:Axiom ;
+   owl:annotatedSource <http://purl.obolibrary.org/obo/NCIT_C83100> ;
+   owl:annotatedProperty <http://www.geneontology.org/formats/oboInOwl#hasExactSynonym> ;
+   owl:annotatedTarget "Study Site Number" ;
+   <http://purl.obolibrary.org/obo/NCIT_P383> "PT" ;
+   <http://purl.obolibrary.org/obo/NCIT_P384> "NCI"
+ ] .
+
+
+###  http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0028
+<http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0028> rdf:type owl:Class ;
+                                                                              rdfs:subClassOf <http://purl.obolibrary.org/obo/BFO_0000035> ,
+                                                                                              [ rdf:type owl:Class ;
+                                                                                                owl:unionOf ( [ rdf:type owl:Restriction ;
+                                                                                                                owl:onProperty <http://www.w3.org/ns/prov#wasGeneratedBy> ;
+                                                                                                                owl:allValuesFrom <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0065>
+                                                                                                              ]
+                                                                                                              [ rdf:type owl:Restriction ;
+                                                                                                                owl:onProperty <http://www.w3.org/ns/prov#wasGeneratedBy> ;
+                                                                                                                owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                                                                                owl:onClass <http://purl.obolibrary.org/obo/NCIT_C16203>
+                                                                                                              ]
+                                                                                                            )
+                                                                                              ] ,
+                                                                                              [ rdf:type owl:Restriction ;
+                                                                                                owl:onProperty <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0102> ;
+                                                                                                owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                                                                owl:onClass <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0040>
+                                                                                              ] ,
+                                                                                              [ rdf:type owl:Restriction ;
+                                                                                                owl:onProperty <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0158> ;
+                                                                                                owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                                                                owl:onClass <http://purl.obolibrary.org/obo/NCIT_C15206>
+                                                                                              ] ,
+                                                                                              [ rdf:type owl:Restriction ;
+                                                                                                owl:onProperty <http://www.w3.org/2006/time#inXSDDate> ;
+                                                                                                owl:someValuesFrom xsd:date
+                                                                                              ] ;
+                                                                              rdfs:isDefinedBy <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0040> ;
+                                                                              rdfs:label "Milestone"@en .
+
+
+###  http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0040
+<http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0040> rdf:type owl:Class ;
+                                                                              rdfs:subClassOf <http://purl.obolibrary.org/obo/NCIT_C113497> ;
+                                                                              rdfs:label "Milestone Name"@en ;
+                                                                              <http://www.w3.org/2004/02/skos/core#prefLabel> "Milestone Name"@en .
+
+
+###  http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0042
+<http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0042> rdf:type owl:Class ;
+                                                                              rdfs:subClassOf <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0028> ,
+                                                                                              [ rdf:type owl:Restriction ;
+                                                                                                owl:onProperty <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0102> ;
+                                                                                                owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                                                                owl:onClass <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0047>
+                                                                                              ] ,
+                                                                                              [ rdf:type owl:Restriction ;
+                                                                                                owl:onProperty <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0158> ;
+                                                                                                owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                                                                owl:onClass <http://purl.obolibrary.org/obo/NCIT_C80403>
+                                                                                              ] ;
+                                                                              rdfs:label "Site Milestone"@en .
+
+
+###  http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0047
+<http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0047> rdf:type owl:Class ;
+                                                                              rdfs:subClassOf <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0040> ;
+                                                                              rdfs:label "Site Milestone Name"@en .
+
+
+###  http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0065
+<http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0065> rdf:type owl:Class ;
+                                                                              rdfs:subClassOf <http://www.w3.org/ns/prov#Activity> ;
+                                                                              rdfs:label "Milestone Planning Activity"@en .
+
+
+###  http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0093
+<http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0093> rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0152
+<http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0152> rdf:type owl:Class .
+
+
+###  http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0155
+<http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_P0155> rdf:type owl:Class .
+
+
+###  http://www.w3.org/2006/time#Instant
+<http://www.w3.org/2006/time#Instant> rdf:type owl:Class .
+
+
+###  http://www.w3.org/ns/prov#Activity
+<http://www.w3.org/ns/prov#Activity> rdf:type owl:Class .
+
+
+###  https://schema.org/Country
+<https://schema.org/Country> rdf:type owl:Class .
+
+
+###  https://w3id.org/cdisc/usdm/v4/StudySite
+<https://w3id.org/cdisc/usdm/v4/StudySite> rdf:type owl:Class .
+
+
+#################################################################
+#    Individuals
+#################################################################
+
+###  http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0044
+<http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0044> rdf:type owl:NamedIndividual ,
+                                                                                       <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0047> ;
+                                                                              <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_D0021> "Site Initiation Visit" ;
+                                                                              rdfs:comment "deep explanatioin"@en ;
+                                                                              rdfs:label "SIV"@en ;
+                                                                              <http://www.w3.org/2004/02/skos/core#definition> "detailed defintion"@en .
+
+
+###  http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/Test_I0071
+<http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/Test_I0071> rdf:type owl:NamedIndividual ,
+                                                                                         <http://www.semanticweb.org/schaaar2/ontologies/2026/7/ClinOps-Core/NV_C0065> ;
+                                                                                rdfs:label "NCV latest planned milestone entry"@en .
+
+
+###  Generated by the OWL API (version 4.5.29.2024-05-13T12:11:03Z) https://github.com/owlcs/owlapi
