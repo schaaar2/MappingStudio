@@ -54,7 +54,15 @@ details.edit{margin-top:7px;font-size:12.5px}
 details.edit summary{cursor:pointer;color:var(--accent)}
 .editgrid{display:grid;grid-template-columns:140px 1fr;gap:6px 10px;margin-top:8px;align-items:center}
 .editgrid select,.editgrid input{font:inherit;padding:4px 7px;border:1px solid var(--line);border-radius:7px;background:#fff;max-width:420px}
-#defaultKeys{font:inherit;padding:5px 8px;border:1px solid var(--line);border-radius:7px;background:#fff;width:260px}
+.ddmulti{position:relative;font-size:13px}
+.ddmulti summary{cursor:pointer;list-style:none;background:#fff;border:1px solid var(--line);border-radius:8px;padding:6px 12px;user-select:none}
+.ddmulti summary::-webkit-details-marker{display:none}
+.ddmulti[open] summary{border-color:var(--accent)}
+.ddmulti .ddlist{position:absolute;z-index:20;top:calc(100% + 4px);left:0;background:#fff;border:1px solid var(--line);border-radius:8px;box-shadow:0 4px 14px rgba(20,30,40,.12);padding:6px 4px;max-height:260px;overflow-y:auto;min-width:260px}
+.ddopt{display:block;padding:3px 10px;border-radius:6px;cursor:pointer;white-space:nowrap;font-size:12.5px}
+.ddopt:hover{background:var(--accent-soft)}
+.ddopt input{accent-color:var(--accent);margin-right:6px;vertical-align:-2px}
+.ddmulti.inline .ddlist{position:static;box-shadow:none;margin-top:4px;max-height:180px}
 .chipx{border:0;background:transparent;color:var(--low);cursor:pointer;font-size:11px;padding:0 1px;line-height:1}
 .resedit{margin-top:9px;font-size:12.5px;border-top:1px dashed var(--line);padding-top:7px}
 .resedit select{font:inherit;padding:4px 7px;border:1px solid var(--line);border-radius:7px;background:#fff;max-width:300px}
