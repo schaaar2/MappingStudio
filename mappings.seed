@@ -1,0 +1,48 @@
+{
+  "comment": "Seed mappings converted from site_readiness_demo.yaml (schema_version 0.1). Columns matching these are pre-confirmed.",
+  "table": "site_readiness_demo.csv",
+  "mappings": [
+    {
+      "col": "Study",
+      "classId": "NCIT:C15206",
+      "propId": "NV:D0091",
+      "restr": [],
+      "plannedActual": null,
+      "keys": ["Study", "SiteID"],
+      "origin": "yaml"
+    },
+    {
+      "col": "SiteID",
+      "classId": "NCIT:C83100",
+      "propId": "NV:D0090",
+      "restr": [],
+      "plannedActual": null,
+      "keys": ["Study", "SiteID"],
+      "origin": "yaml"
+    },
+    {
+      "col": "SiteID",
+      "classId": "USDM:StudySite",
+      "propId": "USDM:StudySite-name",
+      "restr": [],
+      "plannedActual": null,
+      "keys": ["Study", "Site Name"],
+      "origin": "yaml",
+      "note": "From your YAML: property 'StudySite-name' but field 'SiteID' — column 'Site Name' looks like a better fit. Flagged for review."
+    },
+    {
+      "col": "SIV planned date",
+      "classId": "NV:C0028",
+      "propId": "time:inXSDDate",
+      "restr": [
+        {"classId": "NCIT:C15206", "propId": "NV:D0091"},
+        {"classId": "NCIT:C83100", "propId": "NV:D0090"},
+        {"classId": "NV:C0040", "indId": "NV:C0044"},
+        {"classId": "NV:C0065", "indId": "NV:Test_I0071"}
+      ],
+      "plannedActual": "planned",
+      "keys": ["Study", "SiteID"],
+      "origin": "yaml"
+    }
+  ]
+}
