@@ -9,6 +9,9 @@ window.__APP_LOADED__ = true;   // checked by index.html to detect a missing/404
 if(!window.__CORE_LOADED__){ document.body.insertAdjacentHTML("afterbegin",
   '<div style="background:#fdecea;border:1px solid #b3433b;color:#7a2d28;border-radius:8px;padding:10px 12px;margin:10px 0;font-size:13px">⚠ <b>core.js did not load.</b> It must sit next to index.html (exact lowercase name).</div>'); throw new Error("core.js missing"); }
 
+if(!window.__LLM_LOADED__){ document.body.insertAdjacentHTML("afterbegin",
+  '<div style="background:#fdecea;border:1px solid #b3433b;color:#7a2d28;border-radius:8px;padding:10px 12px;margin:10px 0;font-size:13px">⚠ <b>llm.js did not load.</b> It must sit next to index.html.</div>'); throw new Error("llm.js missing"); }
+
 let STATE = { fileName:null, headers:[], rows:[], cols:[], maps:[] };
 const LS_KEY = "ontology-mapping-studio-v1";
 
@@ -172,8 +175,8 @@ function loadLS(){
 
 /* ---------------------- rendering ---------------------- */
 function confMeta(c){ return c>=0.85?["High","hi","var(--good)"]:c>=0.6?["Medium","md","var(--mid)"]:["Low","lo","var(--low)"]; }
-function badge(s){ const cls=s.src==="lexical"?"b-lex":s.src==="semantic"?"b-sem":s.src==="heuristic"?"b-heu":s.src==="owl"?"b-val":"b-yaml";
-  const ico=s.src==="lexical"?"🔤":s.src==="semantic"?"🧠":s.src==="heuristic"?"🧪":s.src==="owl"?"🕸":"📄";
+function badge(s){ const cls=s.src==="lexical"?"b-lex":s.src==="semantic"?"b-sem":s.src==="heuristic"?"b-heu":s.src==="owl"?"b-val":s.src==="llm"?"b-llm":"b-yaml";
+  const ico=s.src==="lexical"?"🔤":s.src==="semantic"?"🧠":s.src==="heuristic"?"🧪":s.src==="owl"?"🕸":s.src==="llm"?"🤖":"📄";
   return `<span class="badge ${cls}" title="${esc(s.txt)}">${ico} ${s.src}</span>`; }
 
 function restrChips(m){
@@ -448,14 +451,16 @@ $("loadSample").onclick=async()=>{
 };
 async function runProposals(){
   if(!ONT){ showFatal("Cannot propose mappings: no ontology loaded — use “🦉 Load ontology” first."); return; }
+  if(!LLM.preflight()) return;   // "No LLM" passes; otherwise needs token in memory + consent
   const btn=$("propose"); btn.disabled=true; const old=btn.textContent;
-  STATE.maps=[];
+  STATE.maps=[]; LLM.beginRun();
   for(let i=0;i<STATE.cols.length;i++){
-    btn.textContent=`⚙️ Proposing… ${i+1}/${STATE.cols.length}`;
-    STATE.maps.push(await proposeForColumn(STATE.cols[i]));
+    btn.textContent=`⚙️ Proposing… ${i+1}/${STATE.cols.length}${LLM.ready()?" (LLM)":""}`;
+    const base=await proposeForColumn(STATE.cols[i]);
+    STATE.maps.push(await LLM.refine(STATE.cols[i], base));
   }
   const restored=loadLS();
-  render();
+  render(); LLM.endRun();
   btn.textContent=old; btn.disabled=false;
   if(restored) $("csvInfo").textContent+=" · previous decisions restored";
 }
