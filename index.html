@@ -31,6 +31,23 @@
     <span id="semStatus" class="muted">off — lexical + OWL only</span>
   </div>
   <div class="row">
+    <label for="llmModel">🤖 LLM for proposals:</label>
+    <select id="llmModel"></select>
+    <input id="llmCustom" type="text" placeholder="custom model ID" autocomplete="off" spellcheck="false" style="display:none">
+    <select id="llmApi" title="Request format of your gateway">
+      <option value="converse">Bedrock Converse API</option>
+      <option value="openai">OpenAI-compatible (/chat/completions)</option>
+    </select>
+  </div>
+  <div class="row" id="llmConn" style="display:none">
+    <input id="llmUrl" type="url" placeholder="Gateway base URL (https://…)" autocomplete="off" spellcheck="false" size="38">
+    <input id="llmToken" type="password" placeholder="Bedrock token (memory only)" autocomplete="off" autocapitalize="off" spellcheck="false" data-1p-ignore data-lpignore="true" size="28">
+    <button id="llmConnect" class="ghost">🔌 Connect</button>
+    <button id="llmClear" class="ghost">🧹 Clear token</button>
+    <label class="muted"><input type="checkbox" id="llmSamples"> also send up to 5 sample cell values per column</label>
+  </div>
+  <div class="row"><span id="llmStatus" class="muted"></span></div>
+  <div class="row">
     <details class="ddmulti" id="dkDD" title="Key columns used for new proposals; override per mapping in its editor">
       <summary>🔑 Default key fields: <span id="dkLabel">—</span></summary>
       <div class="ddlist" id="dkList"><span class="muted">load a CSV first</span></div>
@@ -45,7 +62,7 @@
   </div>
   <div id="summary" class="row muted"></div>
   <div id="gaps" class="gaps"></div>
-  <p class="privacy">⚠️ Privacy: the CSV is parsed locally in your browser and is never uploaded. Do <b>not</b> commit real tracker data or exported mappings containing internal content to a <i>public</i> GitHub repository.</p>
+  <p class="privacy">⚠️ Privacy: the CSV is parsed locally in your browser and is never uploaded. With “No LLM” nothing leaves the browser; if you pick an LLM, only column names, detected types and an ontology shortlist (plus sample values if you tick the box) go to your gateway, and the token is kept in memory only. Do <b>not</b> commit real tracker data or exported mappings containing internal content to a <i>public</i> GitHub repository.</p>
 </section>
 
 <section id="cards" class="cards"></section>
@@ -60,6 +77,7 @@
 
 <script src="https://cdn.jsdelivr.net/npm/n3@1.17.4/browser/n3.min.js"></script>
 <script src="core.js"></script>
+<script src="llm.js"></script>
 <script src="app.js"></script>
 <script>
 /* Fail-loud guard: if app.js was not found/loaded (e.g. 404 on GitHub Pages), say so on the page. */
